@@ -14,7 +14,10 @@ export interface authSate {
     avatar: string;
     permission: {
       _id: string,
-      name: string
+      name: string,
+      method: string,
+      aipPath: string,
+      module: string
     }[]
   }
 }

@@ -1,7 +1,10 @@
+import { callLogin } from "@/apis/api";
 import LoginSocial from "@/components/auth/LoginSocial";
-import { Button, Checkbox, Divider, Form, Input, Typography } from "antd"
+import { useAppDispatch } from "@/redux/hook";
+import { doLoginAction } from "@/redux/reducers/auth.reducer";
+import { Button, Checkbox, Divider, Form, Input, message, notification, Typography } from "antd"
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 interface ILogin {
     email: string,
@@ -12,10 +15,27 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isRemember, setIsRemember] = useState(false);
     const [form] = Form.useForm();
-    const handleLogin = (value: ILogin) => {
+
+    const dispatch = useAppDispatch();
+    // const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+    const navigate = useNavigate();
+
+    const handleLogin = async (values: ILogin) => {
+        const { email, password } = values
         setIsLoading(true)
         try {
-            console.log(value)
+            const res = await callLogin(email, password);
+            if (res.data) {
+                localStorage.setItem("access_token", res.data.access_token);
+                dispatch(doLoginAction(res.data.user));
+                message.success("Login successful");
+                navigate("/");
+            } else {
+                notification.error({
+                    message: "Error",
+                    description: JSON.stringify(res.message)
+                })
+            }
         } catch (error) {
             console.log(error);
         } finally {
