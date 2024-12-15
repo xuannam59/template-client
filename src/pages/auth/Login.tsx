@@ -19,6 +19,8 @@ const Login = () => {
     const dispatch = useAppDispatch();
     // const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const navigate = useNavigate();
+    let params = new URLSearchParams(location.search);
+    const callback = params?.get("callback");
 
     const handleLogin = async (values: ILogin) => {
         const { email, password } = values
@@ -28,12 +30,13 @@ const Login = () => {
             if (res.data) {
                 localStorage.setItem("access_token", res.data.access_token);
                 dispatch(doLoginAction(res.data.user));
-                message.success("Login successful");
-                navigate("/");
+                message.success("Login successfully");
+                window.location.href = callback ? callback : "/"
             } else {
                 notification.error({
                     message: "Error",
-                    description: JSON.stringify(res.message)
+                    description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                    duration: 5
                 })
             }
         } catch (error) {

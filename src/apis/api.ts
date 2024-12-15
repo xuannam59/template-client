@@ -5,9 +5,9 @@ export const callLogin = (email: string, password: string) => {
     return axios.post<IBackendRes<IAccount>>("/auth/login", { email, password });
 }
 
-// export const callRegister = (email: string, password: string) => {
-//     return axios.post<IBackendRes<IAccount>>("/auth/login", { email, password });
-// }
+export const callRegister = (name: string, email: string, password: string, confirmPassword: string, phone: string) => {
+    return axios.post<IBackendRes<{ _id: string }>>("/auth/register", { name, email, password, confirmPassword, phone });
+}
 
 export const callUploadSingleFile = (file: any) => {
     const bodyFormData = new FormData();

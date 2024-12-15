@@ -1,15 +1,29 @@
-import { Button, Divider, Form, Input, Typography } from "antd"
+import { callRegister } from "@/apis/api";
+import { Button, Checkbox, Divider, Form, Input, message, notification, Typography } from "antd"
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const SignUp = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const [isAgree, setIsAgree] = useState(false);
     const [form] = Form.useForm();
+    const navigate = useNavigate();
 
-    const handleSignUp = (value: any) => {
+    const handleSignUp = async (values: any) => {
+        const { name, email, password, confirmPassword, phone } = values
         setIsLoading(true)
         try {
-            console.log(value)
+            const res = await callRegister(name, email, password, confirmPassword, phone);
+            if (res.data) {
+                message.success("Registered successful");
+                navigate("/login");
+            } else {
+                notification.error({
+                    message: "Error",
+                    description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                    duration: 5
+                });
+            }
         } catch (error) {
             console.log(error)
         } finally {
@@ -96,22 +110,26 @@ const SignUp = () => {
                     ]}
                 >
 
-                    <Input.Password placeholder="Phone" allowClear />
+                    <Input placeholder="Phone" allowClear />
                 </Form.Item>
             </Form>
+
+            <Checkbox
+                checked={isAgree}
+                onChange={(e) => setIsAgree(e.target.checked)}
+            >I agree the term & policy</Checkbox>
 
             <Button
                 loading={isLoading}
                 onClick={(() => form.submit())}
+                type="primary"
                 style={{
                     width: "100%",
-                    background: "#6252cd",
-                    color: "white",
-                    height: "36px"
+                    height: "36px",
+                    marginTop: "8px"
                 }}
+                disabled={!isAgree}
             >Sign up</Button>
-
-            <Divider plain>or</Divider>
             <Typography.Paragraph
                 type="secondary"
                 className="text-center"
