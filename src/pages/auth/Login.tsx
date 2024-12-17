@@ -30,8 +30,8 @@ const Login = () => {
             if (res.data) {
                 localStorage.setItem("access_token", res.data.access_token);
                 dispatch(doLoginAction(res.data.user));
-                message.success("Login successfully");
-                window.location.href = callback ? callback : "/"
+                message.success("Login successfully", 3);
+                navigate("/");
             } else {
                 notification.error({
                     message: "Error",
@@ -96,7 +96,10 @@ const Login = () => {
                     </Checkbox>
                 </div>
                 <div className="col text-end">
-                    <Link to="" className="text-end text text-decoration-underline">Forget password</Link>
+                    <Link to="/forgot-password"
+                        className="text-end text-decoration-underline"
+                        style={{ fontSize: "15px" }}
+                    >Forget password</Link>
                 </div>
             </div>
             <Button

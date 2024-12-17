@@ -1,5 +1,6 @@
 import LayoutAuth from '@/components/auth/LayoutAuth'
 import LayoutPage from '@/components/home/LayoutPage'
+import ForgotPassword from '@/pages/auth/ForgotPassword'
 import Login from '@/pages/auth/Login'
 import SignUp from '@/pages/auth/SignUp'
 import HomePage from '@/pages/home/HomePage'
@@ -18,6 +19,7 @@ const Router = () => {
                     <Route path='login' element={<Login />} />
                     <Route path='sign-up' element={<SignUp />} />
                 </Route>
+                <Route path='forgot-password' element={<ForgotPassword />} />
                 <Route path='*' element={"404"} />
             </Routes>
         </BrowserRouter>
