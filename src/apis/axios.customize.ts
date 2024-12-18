@@ -1,20 +1,28 @@
+import { IBackendRes } from "@/types/backend";
+import { Mutex } from "async-mutex";
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_BACKEND_URL;
+interface AccessTokenResponse {
+    access_token: string;
+}
+
+const baseURL = import.meta.env.VITE_BACKEND_URL as string;
 const instance = axios.create({
     baseURL: baseURL,
     withCredentials: true,
 });
 
-const handleRefreshToken = async (): Promise<any> => {
-    const api = "/auth/refresh-token";
-    const res = await instance.post(api);
-    if (res && res.data) return res.data.access_token;
-    else return null;
-}
-
-
+const mutex = new Mutex();
 const NO_RETRY_HEADER = 'x-no-retry'
+
+
+const handleRefreshToken = async (): Promise<string | null> => {
+    return await mutex.runExclusive(async () => {
+        const res = await instance.post<IBackendRes<AccessTokenResponse>>('/auth/refresh-token');
+        if (res && res.data) return res.data.access_token;
+        else return null;
+    })
+}
 
 // Add a request interceptor
 instance.interceptors.request.use((config) => {
@@ -55,6 +63,7 @@ instance.interceptors.response.use(
             error.config && error.response
             && +error.response.status === 400
             && error.config.url === "/auth/refresh-token"
+            && location.pathname.startsWith("/user") // chỉ có trang cá nhân mới chuyền về login
         ) {
             window.location.href = "/login"
         }

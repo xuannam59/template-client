@@ -19,7 +19,7 @@ export interface IAccount {
             _id: string;
             name: string;
             method: string;
-            aipPath: string;
+            apiPath: string;
             module: string;
         }[]
     }
@@ -49,3 +49,5 @@ export interface IUser {
 export interface IForgotPassword {
     email: string
 }
+
+export interface IGetAccount extends Omit<IAccount, "access_token"> { }

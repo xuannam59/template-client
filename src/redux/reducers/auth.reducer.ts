@@ -12,11 +12,11 @@ export interface authSate {
       name: string
     };
     avatar: string;
-    permission: {
+    permissions: {
       _id: string,
       name: string,
       method: string,
-      aipPath: string,
+      apiPath: string,
       module: string
     }[]
   }
@@ -34,7 +34,7 @@ const initialState: authSate = {
       name: ""
     },
     avatar: "",
-    permission: []
+    permissions: []
   }
 }
 
@@ -46,15 +46,25 @@ const authSlide = createSlice({
     doLoginAction: (state, action) => {
       state.isAuthenticated = true;
       state.isLoading = false;
-      state.user = action.payload;
+      state.user._id = action?.payload?._id;
+      state.user.email = action.payload.email;
+      state.user.name = action.payload.name;
+      state.user.role = action?.payload?.role;
+      state.user.avatar = action?.payload?.avatar;
+      state.user.permissions = action?.payload?.permissions;
     },
     doGetAccountAction: (state, action) => {
       state.isAuthenticated = true;
       state.isLoading = false;
-      state.user = action.payload;
+      state.user._id = action?.payload?._id;
+      state.user.email = action.payload.email;
+      state.user.name = action.payload.name;
+      state.user.role = action?.payload?.role;
+      state.user.avatar = action?.payload?.avatar;
+      state.user.permissions = action?.payload?.permissions;
     },
     doLogOutAction: (state) => {
-      localStorage.removeItem("access_token");
+      window.localStorage.removeItem("access_token");
       state.isAuthenticated = false;
       state.user = {
         _id: "",
@@ -65,7 +75,7 @@ const authSlide = createSlice({
           name: ""
         },
         avatar: "",
-        permission: []
+        permissions: []
       };
     }
   }

@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, IForgotPassword } from "@/types/backend";
+import { IAccount, IBackendRes, IForgotPassword, IGetAccount } from "@/types/backend";
 import axios from "./axios.customize";
 
 export const callLogin = (email: string, password: string) => {
@@ -19,6 +19,14 @@ export const callVerifyCode = (email: string, otp: string) => {
 
 export const callResetPassword = (email: string, otp: string, password: string, confirmPassword: string) => {
     return axios.post<IBackendRes<any>>("/auth/reset-password", { email, otp, password, confirmPassword })
+}
+
+export const callGetAccount = () => {
+    return axios.get<IBackendRes<IGetAccount>>("auth/account");
+}
+
+export const callLogOut = () => {
+    return axios.post<IBackendRes<string>>("/auth/logout");
 }
 
 export const callUploadSingleFile = (file: any) => {
