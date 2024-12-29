@@ -1,9 +1,9 @@
 import { callLogOut } from '@/apis/api';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { doLogOutAction } from '@/redux/reducers/auth.reducer';
-import { Avatar, Badge, Button, Dropdown, Layout, Menu, MenuProps, Space, Tag, Typography } from 'antd'
+import { Avatar, Badge, Button, Drawer, Dropdown, Layout, Menu, MenuProps, Space, Tag, Typography } from 'antd'
 import { useEffect, useState } from 'react';
-import { TbChecklist, TbLogout, TbShoppingCart, TbUser } from 'react-icons/tb';
+import { TbBell, TbChecklist, TbLogout, TbMenu2, TbSearch, TbShoppingCart, TbUser } from 'react-icons/tb';
 import { Link, useLocation } from 'react-router';
 import HeaderInputSearch from './HeaderInputSearch';
 
@@ -13,6 +13,8 @@ const { Header } = Layout;
 
 const HeaderPage = () => {
   const [activeMenu, setActiveMenu] = useState('');
+  const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
+
   let location = useLocation();
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
   const user = useAppSelector(state => state.auth.user);
@@ -73,58 +75,82 @@ const HeaderPage = () => {
     },
   ]
   return (
-    <Header style={{ backgroundColor: "white" }}>
-      <div className="row">
-        <div className="col-3 fs-3">
-          <strong style={{ color: "#00a854" }}>J</strong>un<strong style={{ color: "#6252cd" }}>K</strong>un
+    <>
+      <Header style={{ backgroundColor: "white" }}>
+        <div className="row">
+          <div className="col col-md-2 col-sm-2 d-block d-lg-none">
+            <TbMenu2
+              size={25}
+              style={{ cursor: "pointer" }}
+              onClick={() => setIsVisibleDrawer(true)}
+            />
+          </div> {/*Update*/}
+          <div className="col fs-3 d-none d-lg-block">
+            <strong style={{ color: "#00a854" }}>J</strong>un<strong style={{ color: "#6252cd" }}>K</strong>un
+          </div>
+          <div className="col d-none d-lg-block">
+            <Menu
+              defaultSelectedKeys={['']}
+              mode='horizontal'
+              items={items}
+              selectedKeys={[activeMenu]}
+              theme="light"
+              onClick={(e) => setActiveMenu(e.key)}
+            />
+          </div>
+          <div className="col d-none d-md-block">
+            <HeaderInputSearch />
+          </div>
+
+          <div className="col text-end">
+            <Space size={"large"}>
+              <div className="d-block d-md-none ">
+                <TbSearch size={25} style={{ cursor: "pointer" }} /> {/*Update*/}
+              </div>
+              <Badge count={2} showZero>
+                <TbShoppingCart size={25} style={{ cursor: "pointer" }} />
+              </Badge>
+              {isAuthenticated ?
+                <>
+                  <Badge count={0} showZero>
+                    <TbBell size={25} style={{ cursor: "pointer" }} />
+                  </Badge>
+                  <Dropdown menu={{ items: itemsDropDown, style: { minWidth: "150px" } }} arrow placement="bottomRight" >
+                    <Space style={{ cursor: "pointer" }}>
+                      <Avatar
+                        src={user.avatar ? user.avatar : "/images/avatar-user.png"}
+                        size={"large"}
+                      />
+                      <div className="d-flex flex-column align-items-center">
+                        <Text style={{ maxWidth: "125px" }} ellipsis>
+                          {user.name}
+                        </Text>
+                        {user.role.name === "ADMIN" &&
+                          <Tag color="purple">{user.role.name}</Tag>
+                        }
+                      </div>
+                    </Space>
+                  </Dropdown>
+                </>
+                :
+                <Space>
+                  <Button type="primary"><Link to={"/login"}> Login</Link></Button>
+                  <Button type="default"><Link to={"/sign-up"}> Sig-up</Link></Button>
+                </Space>
+              }
+            </Space>
+          </div>
         </div>
-        <div className="col-3">
-          <Menu
-            defaultSelectedKeys={['']}
-            mode='horizontal'
-            items={items}
-            selectedKeys={[activeMenu]}
-            theme="light"
-            onClick={(e) => setActiveMenu(e.key)}
-          />
-        </div>
-        <div className="col-4">
-          <HeaderInputSearch />
-        </div>
-        <div className="col-2 text-end">
-          <Space size={"large"}>
-            <Badge count={2}>
-              <TbShoppingCart size={22} style={{ cursor: "pointer" }} />
-            </Badge>
-            {isAuthenticated ?
-              <>
-                <Dropdown menu={{ items: itemsDropDown, style: { minWidth: "150px" } }}>
-                  <Space style={{ cursor: "pointer" }}>
-                    <Avatar
-                      src={user.avatar ? user.avatar : "/images/avatar-user.png"}
-                      size={"large"}
-                    />
-                    <div className="d-flex flex-column align-items-center">
-                      <Text style={{ maxWidth: "125px" }} ellipsis>
-                        {user.name}
-                      </Text>
-                      {user.role.name === "ADMIN" &&
-                        <Tag color="purple">{user.role.name}</Tag>
-                      }
-                    </div>
-                  </Space>
-                </Dropdown>
-              </>
-              :
-              <Space>
-                <Button type="primary"><Link to={"/login"}> Login</Link></Button>
-                <Button type="default"><Link to={"/sign-up"}> Sig-up</Link></Button>
-              </Space>
-            }
-          </Space>
-        </div>
-      </div>
-    </Header>
+      </Header>
+      <Drawer
+        open={isVisibleDrawer}
+        onClose={() => setIsVisibleDrawer(false)}
+        placement="left"
+        closable={false}
+      >
+        Hello
+      </Drawer>
+    </>
   )
 }
 

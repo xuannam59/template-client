@@ -5,6 +5,21 @@ export interface IBackendRes<T> {
     data?: T;
 }
 
+export interface IBackendResWithPagination<T> {
+    error?: string | string[];
+    message: string;
+    statusCode: number | string;
+    data?: {
+        meta: {
+            current: number;
+            pageSize: number;
+            pages: number;
+            totalItems: number;
+        };
+        result: T[]
+    };
+}
+
 export interface IAccount {
     access_token: string;
     user: {
@@ -51,3 +66,19 @@ export interface IForgotPassword {
 }
 
 export interface IGetAccount extends Omit<IAccount, "access_token"> { }
+
+export interface ICategories {
+    _id: string
+    title: string
+    parentId: {
+        _id: string
+        title: string
+    }
+    status: string
+    image: string
+    slug: string
+
+    isDeleted?: boolean
+    createdAt?: string
+    updatedAt?: string
+}
