@@ -9,6 +9,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { Link } from "react-router";
+import SliderIcon from "@/components/slider/SliderIcon";
 
 const { Text } = Typography
 
@@ -36,15 +37,15 @@ const HomePage = () => {
 
   const getCategories = async () => {
     try {
-      const res = await callGetCategories();
+      const res = await callGetCategories("displayMode=true");
       if (res.data) {
-        const category = res.data.result.filter(item => item.parentId);
-        setCategories(category);
+        setCategories(res.data.result);
       }
     } catch (error) {
       console.log(error)
     }
   }
+
   return (
     <>
       <Carousel
@@ -72,39 +73,26 @@ const HomePage = () => {
           })
         }
       </Carousel>
+      <div
+        style={{
+          background: "#222222",
+          padding: "15px",
+        }}>
+        <div className="container d-flex justify-content-center text-center">
+          <h1
+            className="m-0 lh-base responsive-font fw-bold text-white"
+          >
+            JunKun là đại lý uỷ quyền chính thức của Apple tại Việt Nam (AAR)
+          </h1>
+        </div>
+      </div>
       <div className="container">
         <Section>
-          <Tabbar title="" level={2} />
-          <div style={{
-            width: "80%",
-            margin: " 0 auto",
-            textAlign: "center",
-          }}>
-            <Slider {...settings}>
-              {categories.map((item: ICategories) => (
-                <div
-                  className="item-slider"
-                  key={item._id}
-                >
-                  <Link to={`/products/${item.slug}`}>
-                    <img src={item.image} alt={item.title} />
-                    <Text style={{ marginTop: "20px" }}>{item.title}</Text>
-                  </Link>
-                </div>
-
-              ))}
-            </Slider>
-          </div>
+          <SliderIcon data={categories} />
         </Section>
-
         <Section>
           <Tabbar title="Mac Book" level={2} />
-          <div style={{
-            width: "80%",
-            margin: " 0 auto",
-            textAlign: "center",
-          }}>
-          </div>
+
         </Section>
       </div>
     </>

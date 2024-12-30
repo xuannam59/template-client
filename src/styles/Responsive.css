@@ -1,0 +1,23 @@
+.responsive-font {
+    font-size: 1.25rem;
+    /* Mặc định */
+}
+
+@media (max-width: 768px) {
+    .responsive-font {
+        font-size: 1rem;
+        /* Khi màn hình nhỏ hơn 768px */
+    }
+}
+
+@media (max-width: 576px) {
+    .slider {
+        width: 90%;
+        margin: auto;
+    }
+
+    .responsive-font {
+        font-size: 0.8rem;
+        /* Khi màn hình nhỏ hơn 576px */
+    }
+}

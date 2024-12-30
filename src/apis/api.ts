@@ -29,8 +29,8 @@ export const callLogOut = () => {
     return axios.post<IBackendRes<string>>("api/v1/auth/logout");
 }
 
-export const callGetCategories = () => {
-    return axios.get<IBackendResWithPagination<ICategories>>("api/v1/categories");
+export const callGetCategories = (query: string = "") => {
+    return axios.get<IBackendResWithPagination<ICategories>>(`api/v1/categories?${query}`);
 }
 
 export const callUploadSingleFile = (file: any) => {

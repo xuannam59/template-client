@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch } from './redux/hook'
 import Router from './routers/Router'
 import "@/styles/App.css"
+import "@/styles/Responsive.css"
 import { callGetAccount } from './apis/api';
 import { doGetAccountAction } from './redux/reducers/auth.reducer';
 
