@@ -7,6 +7,9 @@ a {
   margin-bottom: 40px;
 }
 
+.responsive-font {
+  font-size: 1.25rem;
+}
 
 .item-slider {
   text-align: center;
@@ -35,4 +38,30 @@ a {
 
 .slick-prev:hover:before {
   color: #6252CD;
+}
+
+.product-item {
+  background: #FFFFFF;
+  padding: 15px;
+  border-radius: 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-image {
+  margin-top: 10px;
+  width: 100%;
+  height: 230px;
+}
+
+.product-image-content {
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.product-item:hover .product-image-content {
+  transform: translateY(-5px);
 }

@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, IBackendResWithPagination, ICategories, IForgotPassword, IGetAccount } from "@/types/backend";
+import { IAccount, IBackendRes, IBackendResWithPagination, ICategories, IForgotPassword, IGetAccount, IProducts } from "@/types/backend";
 import axios from "./axios.customize";
 
 export const callLogin = (email: string, password: string) => {
@@ -31,6 +31,10 @@ export const callLogOut = () => {
 
 export const callGetCategories = (query: string = "") => {
     return axios.get<IBackendResWithPagination<ICategories>>(`api/v1/categories?${query}`);
+}
+
+export const callGetProducts = (query: string = "") => {
+    return axios.get<IBackendResWithPagination<IProducts>>(`api/v1/products?${query}`);
 }
 
 export const callUploadSingleFile = (file: any) => {

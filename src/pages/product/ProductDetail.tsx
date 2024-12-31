@@ -1,10 +1,9 @@
 import { useParams } from "react-router"
 
 const ProductDetail = () => {
-    const params = useParams();
-    console.log(params);
+    const { slug } = useParams();
     return (
-        <div>ProductDetail: { }</div>
+        <div>ProductDetail: {slug}</div>
     )
 }
 

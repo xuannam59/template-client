@@ -3,21 +3,25 @@ import { ReactNode } from "react"
 
 interface IProps {
     title: string,
-    right?: ReactNode;
+    icon?: ReactNode
     level?: 1 | 2 | 3 | 4 | 5 | undefined;
 }
 
 const { Title } = Typography;
 
 const Tabbar = (props: IProps) => {
-    const { title, right, level } = props
+    const { title, level, icon } = props
     return (
         <>
-            <div className="row">
-                <div className={`col ${!right && "text-center"}`}>
-                    <Title style={{ fontWeight: 300 }} level={level ?? 1}>{title} </Title>
+            <div className="container">
+                <div className={`d-flex justify-content-center align-items-center`}>
+                    {icon}
+                    <Title
+                        style={{ fontWeight: 400, marginLeft: 4 }}
+                        level={level ?? 1}>
+                        {title}
+                    </Title>
                 </div>
-                {right && right}
             </div>
         </>
     )

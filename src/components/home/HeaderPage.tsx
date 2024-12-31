@@ -76,7 +76,13 @@ const HeaderPage = () => {
   ]
   return (
     <>
-      <Header style={{ backgroundColor: "white" }}>
+      <Header style={{
+        backgroundColor: "white",
+        position: 'sticky',
+        top: 0,
+        zIndex: 1,
+        width: '100%',
+      }}>
         <div className="row">
           <div className="col col-md-2 col-sm-2 d-block d-lg-none">
             <TbMenu2

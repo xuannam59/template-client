@@ -77,6 +77,35 @@ export interface ICategories {
     status: string
     image: string
     slug: string
+    displayMode: boolean
+
+    isDeleted?: boolean
+    createdAt?: string
+    updatedAt?: string
+}
+
+export interface IProducts {
+    _id: string
+    title: string
+    description: string
+    categoryId: {
+        _id: string
+        title: string
+    }
+    price: number
+    discountPercentage: number
+    images: string[]
+    status: string
+    versions: {
+        color: string
+        quantity: number
+    }[]
+    slug: string
+    sales: number
+    ram: string,
+    chip: string,
+    ssd: string,
+    gpu: string
 
     isDeleted?: boolean
     createdAt?: string

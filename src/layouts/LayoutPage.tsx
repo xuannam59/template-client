@@ -1,7 +1,7 @@
+import FooterPage from "@/components/home/FooterPage"
+import HeaderPage from "@/components/home/HeaderPage"
 import { Layout } from "antd"
-import HeaderPage from "./HeaderPage"
 import { Outlet } from "react-router"
-import FooterPage from "./FooterPage"
 
 const { Content } = Layout
 const LayoutPage = () => {

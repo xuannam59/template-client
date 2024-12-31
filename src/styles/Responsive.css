@@ -1,12 +1,10 @@
-.responsive-font {
-    font-size: 1.25rem;
-    /* Mặc định */
-}
-
 @media (max-width: 768px) {
     .responsive-font {
         font-size: 1rem;
-        /* Khi màn hình nhỏ hơn 768px */
+    }
+
+    .product-image {
+        height: 200px;
     }
 }
 
@@ -18,6 +16,9 @@
 
     .responsive-font {
         font-size: 0.8rem;
-        /* Khi màn hình nhỏ hơn 576px */
+    }
+
+    .product-image {
+        height: 180px;
     }
 }

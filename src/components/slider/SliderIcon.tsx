@@ -46,7 +46,7 @@ const SliderIcon = (props: IProps) => {
                             className="item-slider"
                             key={item._id}
                         >
-                            <Link to={`/products/${item.slug}`}>
+                            <Link to={`/products/list/${item.slug}`}>
                                 <img src={item.image} alt={item.title} />
                                 <Text style={{ marginTop: "20px" }}>{item.title}</Text>
                             </Link>

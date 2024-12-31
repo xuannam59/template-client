@@ -1,5 +1,5 @@
-import LayoutAuth from '@/components/auth/LayoutAuth'
-import LayoutPage from '@/components/home/LayoutPage'
+import LayoutAuth from '@/layouts/LayoutAuth'
+import LayoutPage from '@/layouts/LayoutPage'
 import ForgotPassword from '@/pages/auth/ForgotPassword'
 import Login from '@/pages/auth/Login'
 import SignUp from '@/pages/auth/SignUp'

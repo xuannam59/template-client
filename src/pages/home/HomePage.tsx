@@ -1,39 +1,39 @@
-import { Carousel, Typography } from "antd"
+import { Carousel } from "antd"
 import { imgSlider } from "./dataInfo";
 import { useEffect, useState } from "react";
-import { callGetCategories } from "@/apis/api";
-import { ICategories } from "@/types/backend";
+import { callGetCategories, callGetProducts } from "@/apis/api";
+import { ICategories, IProducts } from "@/types/backend";
 import Tabbar from "@/components/home/Tabbar";
 import Section from "@/components/home/Section";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
-import { Link } from "react-router";
 import SliderIcon from "@/components/slider/SliderIcon";
+import ProductItem from "@/components/product/ProductItem";
+// import { TbDeviceLaptop } from "react-icons/tb";
 
-const { Text } = Typography
 
 const HomePage = () => {
   const [categories, setCategories] = useState<ICategories[]>([]);
+  const [bestSellers, setBestSellers] = useState<IProducts[]>([]);
   useEffect(() => {
-    getCategories()
+    getData()
   }, []);
 
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    arrows: true,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
-  };
+  const getData = () => {
+    getBestSeller();
+    getCategories();
+  }
+
+  const getBestSeller = async () => {
+    try {
+      const res = await callGetProducts("sort=-sales&pageSize=4");
+      if (res.data) {
+        setBestSellers(res.data.result);
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const getCategories = async () => {
     try {
@@ -91,8 +91,13 @@ const HomePage = () => {
           <SliderIcon data={categories} />
         </Section>
         <Section>
-          <Tabbar title="Mac Book" level={2} />
-
+          <Tabbar
+            title="Our BestSeller"
+            level={2}
+          />
+          <div className="row">
+            {bestSellers.map(item => <ProductItem item={item} />)}
+          </div>
         </Section>
       </div>
     </>
