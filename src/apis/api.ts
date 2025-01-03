@@ -37,6 +37,10 @@ export const callGetProducts = (query: string = "") => {
     return axios.get<IBackendResWithPagination<IProducts>>(`api/v1/products?${query}`);
 }
 
+export const callGetProductDetail = (idOrSlug: string = "") => {
+    return axios.get<IBackendRes<IProducts>>(`api/v1/products/${idOrSlug}`);
+}
+
 export const callUploadSingleFile = (file: any) => {
     const bodyFormData = new FormData();
     bodyFormData.append("file", file);

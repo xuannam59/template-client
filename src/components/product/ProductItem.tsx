@@ -1,4 +1,5 @@
 import { IProducts } from "@/types/backend"
+import { VND } from "@/utils/handleCurrency"
 import { Button, Rate, Typography } from "antd"
 import { TbShoppingCart } from "react-icons/tb"
 import { Link } from "react-router"
@@ -10,7 +11,7 @@ interface IProps {
 const { Paragraph, Title } = Typography
 const ProductItem = (props: IProps) => {
     const { item } = props
-    const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)
+    const price = item.price * (1 - item.discountPercentage / 100);
     const sales = new Intl.NumberFormat('en', { notation: 'compact' }).format(item.sales);
     return (
         <div
@@ -33,12 +34,9 @@ const ProductItem = (props: IProps) => {
                             <Title level={5} className="m-0">
                                 {item.title}
                             </Title>
-                            <Paragraph>
-                                {item.chip} {item.ram} RAM {item.ssd} SSD {item.gpu}-NEW
-                            </Paragraph>
                         </Link>
                         <Paragraph className="m-0 fs-5 text-danger fw-bold">
-                            {price}
+                            {VND.format(price)}
                         </Paragraph>
                     </div>
                 </div>

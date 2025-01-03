@@ -65,3 +65,17 @@ a {
 .product-item:hover .product-image-content {
   transform: translateY(-5px);
 }
+
+.image-gallery-thumbnail {
+  border: 2px solid #cccc;
+  border-radius: 5px;
+}
+
+.image-gallery-thumbnail.active {
+  border: 2px solid #7dbd44;
+}
+
+.image-gallery-thumbnail:hover {
+  border: 2px solid #6252CD;
+
+}
