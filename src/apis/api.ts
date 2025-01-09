@@ -1,5 +1,6 @@
-import { IAccount, IBackendRes, IBackendResWithPagination, ICategories, IForgotPassword, IGetAccount, IProducts } from "@/types/backend";
+import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IForgotPassword, IGetAccount, IProducts } from "@/types/backend";
 import axios from "./axios.customize";
+import { data } from "react-router";
 
 export const callLogin = (email: string, password: string) => {
     return axios.post<IBackendRes<IAccount>>("api/v1/auth/login", { email, password });
@@ -39,6 +40,10 @@ export const callGetProducts = (query: string = "") => {
 
 export const callGetProductDetail = (idOrSlug: string = "") => {
     return axios.get<IBackendRes<IProducts>>(`api/v1/products/${idOrSlug}`);
+}
+
+export const callGetUserCart = (userId: string | undefined) => {
+    return axios.post<IBackendRes<ICart>>(`api/v1/carts`, { userId });
 }
 
 export const callUploadSingleFile = (file: any) => {

@@ -1,7 +1,13 @@
-import { Input } from "antd"
+import { Drawer, Input } from "antd"
 import { TbSearch } from "react-icons/tb"
 
-const HeaderInputSearch = () => {
+interface IProps {
+    openDrawer: boolean
+    onClose: () => void;
+}
+
+const HeaderInputSearch = (props: IProps) => {
+    const { openDrawer, onClose } = props
     let timeoutId: ReturnType<typeof setTimeout>;
     // const [result, setResult] = useState(0);
 
@@ -21,16 +27,26 @@ const HeaderInputSearch = () => {
     }
     return (
         <>
+            <Drawer
+                title={"Tìm kiếm"}
+                open={openDrawer}
+                placement={"top"}
+                closeIcon={false}
+                onClose={onClose}
+                height={120}
+            >
+                <div className="d-flex justify-content-center">
+                    <Input
+                        suffix={<TbSearch />}
+                        maxLength={128}
+                        placeholder="Nhập từ khoá."
+                        style={{ borderRadius: "20px", width: "80%" }}
+                        onChange={onChange}
+                        onPressEnter={onPressEnter}
 
-            <Input
-                suffix={<TbSearch />}
-                maxLength={128}
-                placeholder="Search product..."
-                style={{ borderRadius: "20px" }}
-                onChange={onChange}
-                onPressEnter={onPressEnter}
-            />
-
+                    />
+                </div>
+            </Drawer>
         </>
     )
 }

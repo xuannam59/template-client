@@ -65,7 +65,22 @@ export interface IForgotPassword {
     email: string
 }
 
-export interface IGetAccount extends Omit<IAccount, "access_token"> { }
+export interface IGetAccount {
+    _id: string;
+    name: string;
+    email: string;
+    role: {
+        _id: string;
+        name: string;
+    };
+    permission: {
+        _id: string;
+        name: string;
+        method: string;
+        apiPath: string;
+        module: string;
+    }[]
+}
 
 export interface ICategories {
     _id: string
@@ -110,4 +125,10 @@ export interface IProducts {
     isDeleted?: boolean
     createdAt?: string
     updatedAt?: string
+}
+
+export interface ICart {
+    _id: string
+    userId?: string
+    productList: IProducts
 }

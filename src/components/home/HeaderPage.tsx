@@ -14,10 +14,12 @@ const { Header } = Layout;
 const HeaderPage = () => {
   const [activeMenu, setActiveMenu] = useState('');
   const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
+  const [isOpenSearch, setIsOpenSearch] = useState(false);
 
   let location = useLocation();
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
   const user = useAppSelector(state => state.auth.user);
+  const cartUser = useAppSelector(state => state.cart);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -74,6 +76,8 @@ const HeaderPage = () => {
       }
     },
   ]
+
+  console.log(cartUser);
   return (
     <>
       <Header style={{
@@ -91,8 +95,10 @@ const HeaderPage = () => {
               onClick={() => setIsVisibleDrawer(true)}
             />
           </div> {/*Update*/}
-          <div className="col fs-3 d-none d-lg-block">
-            <strong style={{ color: "#00a854" }}>J</strong>un<strong style={{ color: "#6252cd" }}>K</strong>un
+          <div className="col fs-3 text-sm-center text-lg-start">
+            <Link to={"/"} style={{ color: "black" }}>
+              <strong style={{ color: "#00a854" }}>J</strong>un<strong style={{ color: "#6252cd" }}>K</strong>un
+            </Link>
           </div>
           <div className="col d-none d-lg-block">
             <Menu
@@ -104,16 +110,11 @@ const HeaderPage = () => {
               onClick={(e) => setActiveMenu(e.key)}
             />
           </div>
-          <div className="col d-none d-md-block">
-            <HeaderInputSearch />
-          </div>
 
           <div className="col text-end">
-            <Space size={"large"}>
-              <div className="d-block d-md-none ">
-                <TbSearch size={25} style={{ cursor: "pointer" }} /> {/*Update*/}
-              </div>
-              <Badge count={2} showZero>
+            <Space size={"middle"}>
+              <TbSearch size={25} style={{ cursor: "pointer" }} onClick={() => setIsOpenSearch(true)} />
+              <Badge count={cartUser.productList.length} showZero>
                 <TbShoppingCart size={25} style={{ cursor: "pointer" }} />
               </Badge>
               {isAuthenticated ?
@@ -148,6 +149,10 @@ const HeaderPage = () => {
           </div>
         </div>
       </Header>
+      <HeaderInputSearch
+        openDrawer={isOpenSearch}
+        onClose={() => { setIsOpenSearch(false) }}
+      />
       <Drawer
         open={isVisibleDrawer}
         onClose={() => setIsVisibleDrawer(false)}

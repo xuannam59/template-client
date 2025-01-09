@@ -77,5 +77,44 @@ a {
 
 .image-gallery-thumbnail:hover {
   border: 2px solid #6252CD;
+}
 
+.color-item {
+  width: 24px;
+  height: 24px;
+  border-radius: 100%;
+}
+
+.color-item.active {
+  border: 3px solid rgba(125, 189, 68, 0.5);
+}
+
+.color-item:hover {
+  border: 3px solid #6252CD;
+}
+
+.button-grounds {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  border: 1px solid #212121;
+}
+
+.button-grounds span {
+  padding: 0 12px;
+}
+
+.btn-add-cart {
+  width: 100%;
+  display: block;
+  background: #7dbd44;
+  color: white;
+  border-radius: 8px;
+  padding: 15px;
+  transition: 0.5s;
+}
+
+.btn-add-cart:hover {
+  color: white;
+  background-color: #6252CD;
 }

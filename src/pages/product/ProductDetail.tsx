@@ -1,27 +1,32 @@
 import { callGetProductDetail } from "@/apis/api";
 import { IProducts } from "@/types/backend";
-import { Breadcrumb, Rate, Space, Typography } from "antd";
+import { Breadcrumb, Button, InputNumber, Rate, Space, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router"
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { VND } from "@/utils/handleCurrency";
+import { TbCheck, TbMinus, TbPlus } from "react-icons/tb";
 
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const ProductDetail = () => {
     const { slug } = useParams();
     const [dataDetail, setDataDetail] = useState<IProducts>();
+    const [selectColor, setSelectColor] = useState<string>("");
     const [selectedImage, setSelectedImage] = useState<{
         original: string,
         thumbnail: string,
     }[]>([]);
-    const price = dataDetail ? dataDetail?.price : 0;
-    const newPrice = dataDetail ? dataDetail?.price * (1 - dataDetail?.discountPercentage / 100) : 0
+    const [count, setCount] = useState(1);
     useEffect(() => {
         fetchProductDetail()
     }, [slug]);
+
+    const quantity = dataDetail ? dataDetail.versions.find(item => item.color === selectColor)?.quantity : 0;
+    const price = dataDetail ? dataDetail.price : 0;
+    const newPrice = dataDetail ? dataDetail.price * (1 - dataDetail?.discountPercentage / 100) : 0
 
     const fetchProductDetail = async () => {
         try {
@@ -35,6 +40,7 @@ const ProductDetail = () => {
                     }
                 })
                 setSelectedImage(images);
+                setSelectColor(res.data.versions[0].color);
             }
         } catch (error) {
             console.log(error);
@@ -65,7 +71,7 @@ const ProductDetail = () => {
                         ]} />
 
                         <div className="row mt-3">
-                            <div className="col-12 col-md-5">
+                            <div className="col-12 col-md-6">
                                 <ImageGallery
                                     showPlayButton={false}
                                     showFullscreenButton={false}
@@ -73,6 +79,20 @@ const ProductDetail = () => {
                                     renderRightNav={() => <></>}
                                     items={selectedImage}
                                 />
+                                <div className="mt-3 mb-3 text-center">
+                                    JunKun là đại lý ủy quyền chính thức của Apple tại Việt Nam
+                                </div>
+                                {dataDetail.description &&
+                                    <div className="text-center"
+                                        style={{
+                                            border: "1px solid #ccc",
+                                            borderRadius: "16px",
+                                            paddingTop: "12px"
+                                        }}
+                                    >
+                                        <div dangerouslySetInnerHTML={{ __html: dataDetail.description }} />
+                                    </div>
+                                }
                             </div>
                             <div className="col">
                                 <Title level={3}>{dataDetail?.title}-NEW</Title>
@@ -84,17 +104,110 @@ const ProductDetail = () => {
                                 <div className="mt-3">
                                     <Space>
                                         <Title level={4}
-                                            className="mt-0"
+                                            className="mb-0 text-danger"
+
                                         >
                                             {VND.format(newPrice)}
                                         </Title>
                                         <Title level={4}
-                                            className="mt-0 text-decoration-line-through"
+                                            className="mb-0 text-decoration-line-through"
                                             type="secondary"
                                         >
                                             {VND.format(price)}
                                         </Title>
                                     </Space>
+                                </div>
+                                <div className="mt-3">
+                                    <Paragraph>
+                                        <TbCheck size={20}
+                                            style={{
+                                                marginRight: "8px",
+                                                color: "#6252CD"
+                                            }}
+                                        />
+                                        Sản phẩm chính hãng Apple mới 100% nguyên seal
+                                    </Paragraph>
+                                    <Paragraph>
+                                        <TbCheck size={20}
+                                            style={{
+                                                marginRight: "8px",
+                                                color: "#6252CD"
+                                            }}
+                                        />
+                                        Giá đã bao gồm VAT
+                                    </Paragraph>
+                                    <Paragraph>
+                                        <TbCheck size={20}
+                                            style={{
+                                                marginRight: "8px",
+                                                color: "#6252CD"
+                                            }}
+                                        />
+                                        Bảo hành 12 tháng
+                                    </Paragraph>
+                                    <Paragraph>
+                                        <TbCheck size={20}
+                                            style={{
+                                                marginRight: "8px",
+                                                color: "#6252CD"
+                                            }}
+                                        />
+                                        Giảm giá 10% khi mua phụ kiện kèm theo
+                                    </Paragraph>
+                                </div>
+                                <div className="mt-3">
+                                    <Space>
+                                        <Text className="fw-bold fs-5">
+                                            Màu sắc :
+                                        </Text>
+                                        {dataDetail.versions.map(item =>
+                                            <a key={item.color}>
+                                                <div
+                                                    className={`color-item ${selectColor === item.color ? "active" : ""}`}
+                                                    style={{ background: item.color }}
+                                                    onClick={() => setSelectColor(item.color)}
+                                                />
+                                            </a>
+                                        )}
+                                    </Space>
+                                </div>
+                                <div className="mt-3">
+                                    <Paragraph>Số lượng còn: {quantity}</Paragraph>
+                                    <Space
+                                        size={"middle"}
+                                        align="center" >
+                                        <div className="button-grounds">
+                                            <Button
+                                                disabled={count <= 1}
+                                                onClick={() => setCount(count - 1)}
+                                                type="text"
+                                                icon={<TbMinus size={20} />}
+                                            />
+                                            <InputNumber
+                                                variant="borderless"
+                                                style={{ width: "40px" }}
+                                                controls={false}
+                                                min={0}
+                                                max={quantity}
+                                                value={count}
+                                                onChange={(value) => setCount(value ?? count)}
+                                            />
+                                            <Button
+                                                disabled={count === quantity}
+                                                onClick={() => setCount(count + 1)}
+                                                type="text"
+                                                icon={<TbPlus size={20} />}
+                                            />
+                                        </div>
+                                    </Space>
+                                </div>
+                                <div className="mt-3">
+                                    <a className="text-center btn-add-cart">
+                                        <span className="d-flex flex-column">
+                                            <strong className="fs-5">THÊM VÀO GIỎ</strong>
+                                            <span className="fs-13px">chọn thêm món đồ khác</span>
+                                        </span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
