@@ -70,6 +70,7 @@ const HeaderPage = () => {
       icon: <TbLogout size={20} />,
       onClick: async () => {
         const res = await callLogOut();
+        window.location.reload();
         if (res.data) {
           dispatch(doLogOutAction());
         }
@@ -77,7 +78,6 @@ const HeaderPage = () => {
     },
   ]
 
-  console.log(cartUser);
   return (
     <>
       <Header style={{

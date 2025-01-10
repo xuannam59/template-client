@@ -63,9 +63,8 @@ instance.interceptors.response.use(
             error.config && error.response
             && +error.response.status === 400
             && error.config.url === "/api/v1/auth/refresh-token"
-            && location.pathname.startsWith("/user") // chỉ có trang cá nhân mới chuyền về login
+            && location.pathname.startsWith("/user")
         ) {
-            await instance.post<IBackendRes<string>>("api/v1/auth/logout");
             window.location.href = "/login"
         }
         return error?.response?.data ?? Promise.reject(error);

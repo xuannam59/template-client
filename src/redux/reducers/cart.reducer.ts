@@ -30,6 +30,20 @@ const cartSlide = createSlice({
         color: action?.payload?.color,
         quantity: action?.payload?.quantity
       }
+      const quantityProduct = product.productId.versions.find((item: any) => item.color === product.color).quantity;
+      const productExist = state.productList.findIndex(item =>
+        item.productId._id === product.productId._id &&
+        item.color === product.color
+      );
+      if (productExist !== -1) {
+        if (quantityProduct < state.productList[productExist].quantity + product.quantity) {
+          state.productList[productExist].quantity = quantityProduct
+        } else {
+          state.productList[productExist].quantity += product.quantity;
+        }
+      } else {
+        state.productList.unshift(product);
+      }
     },
     doRemoveProduct: (state, action) => {
       const productId = action?.payload?._id

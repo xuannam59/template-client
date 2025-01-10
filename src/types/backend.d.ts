@@ -117,10 +117,10 @@ export interface IProducts {
     }[]
     slug: string
     sales: number
-    ram: string,
-    chip: string,
-    ssd: string,
-    gpu: string
+    ram?: string,
+    chip?: string,
+    ssd?: string,
+    gpu?: string
 
     isDeleted?: boolean
     createdAt?: string

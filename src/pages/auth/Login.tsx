@@ -31,7 +31,7 @@ const Login = () => {
                 localStorage.setItem("access_token", res.data.access_token);
                 dispatch(doLoginAction(res.data.user));
                 message.success("Login successfully", 3);
-                navigate("/");
+                window.location.href = "/"
             } else {
                 notification.error({
                     message: "Error",

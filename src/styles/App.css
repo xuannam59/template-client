@@ -106,15 +106,7 @@ a {
 
 .btn-add-cart {
   width: 100%;
-  display: block;
-  background: #7dbd44;
-  color: white;
   border-radius: 8px;
-  padding: 15px;
   transition: 0.5s;
-}
-
-.btn-add-cart:hover {
-  color: white;
-  background-color: #6252CD;
+  height: 80px;
 }

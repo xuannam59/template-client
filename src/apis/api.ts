@@ -46,6 +46,10 @@ export const callGetUserCart = (userId: string | undefined) => {
     return axios.post<IBackendRes<ICart>>(`api/v1/carts`, { userId });
 }
 
+export const callAddProductToCart = (cartId: string, productId: string, quantity: number, color: string) => {
+    return axios.patch<IBackendRes<string>>(`api/v1/carts/add-product/${cartId}`, { productId, quantity, color });
+}
+
 export const callUploadSingleFile = (file: any) => {
     const bodyFormData = new FormData();
     bodyFormData.append("file", file);

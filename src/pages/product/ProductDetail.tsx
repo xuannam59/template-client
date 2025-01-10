@@ -1,12 +1,14 @@
-import { callGetProductDetail } from "@/apis/api";
+import { callAddProductToCart, callGetProductDetail } from "@/apis/api";
 import { IProducts } from "@/types/backend";
-import { Breadcrumb, Button, InputNumber, Rate, Space, Typography } from "antd";
+import { Breadcrumb, Button, InputNumber, message, notification, Rate, Space, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router"
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { VND } from "@/utils/handleCurrency";
 import { TbCheck, TbMinus, TbPlus } from "react-icons/tb";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { doAddProduct } from "@/redux/reducers/cart.reducer";
 
 
 const { Title, Text, Paragraph } = Typography;
@@ -20,6 +22,10 @@ const ProductDetail = () => {
         thumbnail: string,
     }[]>([]);
     const [count, setCount] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+    const cartId = useAppSelector(state => state.cart._id);
+    const dispatch = useAppDispatch();
+
     useEffect(() => {
         fetchProductDetail()
     }, [slug]);
@@ -45,6 +51,40 @@ const ProductDetail = () => {
         } catch (error) {
             console.log(error);
         }
+    }
+    const handleAddItem = async () => {
+        setIsLoading(true)
+        const productList = {
+            productId: dataDetail,
+            color: selectColor,
+            quantity: count
+        }
+        try {
+            const id = dataDetail ? dataDetail?._id : ""
+            const res = await callAddProductToCart(cartId, id, count, selectColor);
+            if (res.data) {
+                console.log(res.data);
+                dispatch(doAddProduct(productList));
+                message.success("Thêm vào giỏ hàng thành công")
+            } else {
+                res.statusCode === 400 ?
+                    notification.warning({
+                        message: "Warning",
+                        description: res.message,
+                        duration: 3
+                    }) :
+                    notification.error({
+                        message: "Error",
+                        description: res.message && Array.isArray(res.message) ? res.message.toString() : res.message,
+                        duration: 3
+                    })
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setIsLoading(false)
+        }
+
     }
     return (
         <>
@@ -202,12 +242,22 @@ const ProductDetail = () => {
                                     </Space>
                                 </div>
                                 <div className="mt-3">
-                                    <a className="text-center btn-add-cart">
-                                        <span className="d-flex flex-column">
-                                            <strong className="fs-5">THÊM VÀO GIỎ</strong>
-                                            <span className="fs-13px">chọn thêm món đồ khác</span>
-                                        </span>
-                                    </a>
+                                    <Button
+                                        className="text-center btn-add-cart"
+                                        onClick={() => handleAddItem()}
+                                        disabled={quantity && quantity <= 0 ? true : false}
+                                        type="primary"
+                                        loading={isLoading}
+                                    >
+                                        <div className="d-flex flex-column">
+                                            <span className="fs-5 fw-bold">
+                                                THÊM VÀO GIỎ
+                                            </span>
+                                            <span className="d-none d-md-block fs-6">
+                                                chọn thêm món đồ khác
+                                            </span>
+                                        </div>
+                                    </Button>
                                 </div>
                             </div>
                         </div>
