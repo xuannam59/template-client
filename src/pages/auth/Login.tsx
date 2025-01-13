@@ -4,7 +4,7 @@ import { useAppDispatch } from "@/redux/hook";
 import { doLoginAction } from "@/redux/reducers/auth.reducer";
 import { Button, Checkbox, Divider, Form, Input, message, notification, Typography } from "antd"
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 interface ILogin {
     email: string,
@@ -18,9 +18,6 @@ const Login = () => {
 
     const dispatch = useAppDispatch();
     // const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
-    const navigate = useNavigate();
-    let params = new URLSearchParams(location.search);
-    const callback = params?.get("callback");
 
     const handleLogin = async (values: ILogin) => {
         const { email, password } = values
@@ -83,7 +80,7 @@ const Login = () => {
                     ]}
                 >
 
-                    <Input.Password placeholder="password" allowClear />
+                    <Input.Password placeholder="password" allowClear onPressEnter={() => form.submit()} />
                 </Form.Item>
             </Form>
             <div className="mb-3 row">

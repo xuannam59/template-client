@@ -21,7 +21,6 @@ const ResetPassword = (props: IProps) => {
         const { password, confirmPassword } = value;
         setIsLoading(true);
         try {
-            console.log(confirmPassword, password);
             const res = await callResetPassword(email, otp, password, confirmPassword);
             if (res.data) {
                 message.success("Reset password successfully");

@@ -8,7 +8,7 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import { VND } from "@/utils/handleCurrency";
 import { TbCheck, TbMinus, TbPlus } from "react-icons/tb";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { doAddProduct } from "@/redux/reducers/cart.reducer";
+import { doGetCart } from "@/redux/reducers/cart.reducer";
 
 
 const { Title, Text, Paragraph } = Typography;
@@ -23,7 +23,6 @@ const ProductDetail = () => {
     }[]>([]);
     const [count, setCount] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
-    const cartId = useAppSelector(state => state.cart._id);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -32,7 +31,7 @@ const ProductDetail = () => {
 
     const quantity = dataDetail ? dataDetail.versions.find(item => item.color === selectColor)?.quantity : 0;
     const price = dataDetail ? dataDetail.price : 0;
-    const newPrice = dataDetail ? dataDetail.price * (1 - dataDetail?.discountPercentage / 100) : 0
+    const newPrice = dataDetail ? dataDetail.price * (1 - dataDetail?.discountPercentage / 100) : 0;
 
     const fetchProductDetail = async () => {
         try {
@@ -54,17 +53,11 @@ const ProductDetail = () => {
     }
     const handleAddItem = async () => {
         setIsLoading(true)
-        const productList = {
-            productId: dataDetail,
-            color: selectColor,
-            quantity: count
-        }
         try {
             const id = dataDetail ? dataDetail?._id : ""
-            const res = await callAddProductToCart(cartId, id, count, selectColor);
+            const res = await callAddProductToCart(id, count, selectColor);
             if (res.data) {
-                console.log(res.data);
-                dispatch(doAddProduct(productList));
+                dispatch(doGetCart(res.data));
                 message.success("Thêm vào giỏ hàng thành công")
             } else {
                 res.statusCode === 400 ?

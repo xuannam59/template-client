@@ -46,8 +46,14 @@ export const callGetUserCart = (userId: string | undefined) => {
     return axios.post<IBackendRes<ICart>>(`api/v1/carts`, { userId });
 }
 
-export const callAddProductToCart = (cartId: string, productId: string, quantity: number, color: string) => {
-    return axios.patch<IBackendRes<string>>(`api/v1/carts/add-product/${cartId}`, { productId, quantity, color });
+export const callAddProductToCart = (productId: string, quantity: number, color: string) => {
+    return axios.patch<IBackendRes<string>>(`api/v1/carts/add-product`, { productId, quantity, color });
+}
+
+export const callRemoveProductToCart = (id: string, color: string) => {
+    return axios.delete<IBackendRes<string>>(`api/v1/carts/remove-product`, {
+        params: { id: id, color: color }
+    });
 }
 
 export const callUploadSingleFile = (file: any) => {
