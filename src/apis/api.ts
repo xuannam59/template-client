@@ -47,13 +47,15 @@ export const callGetUserCart = (userId: string | undefined) => {
 }
 
 export const callAddProductToCart = (productId: string, quantity: number, color: string) => {
-    return axios.patch<IBackendRes<string>>(`api/v1/carts/add-product`, { productId, quantity, color });
+    return axios.patch<IBackendRes<ICart>>(`api/v1/carts/add-product`, { productId, quantity, color });
 }
 
-export const callRemoveProductToCart = (id: string, color: string) => {
-    return axios.delete<IBackendRes<string>>(`api/v1/carts/remove-product`, {
-        params: { id: id, color: color }
-    });
+export const callRemoveProductToCart = (id: string) => {
+    return axios.patch<IBackendRes<ICart>>(`api/v1/carts/remove-product`, { id });
+}
+
+export const callChangeProductType = (_id: string, value: number | string, type: string) => {
+    return axios.patch<IBackendRes<ICart>>(`api/v1/carts/change-quantity`, { _id, value, type });
 }
 
 export const callUploadSingleFile = (file: any) => {

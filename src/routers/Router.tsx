@@ -3,6 +3,7 @@ import LayoutPage from '@/layouts/LayoutPage'
 import ForgotPassword from '@/pages/auth/ForgotPassword'
 import Login from '@/pages/auth/Login'
 import SignUp from '@/pages/auth/SignUp'
+import Checkout from '@/pages/checkout/Checkout'
 import HomePage from '@/pages/home/HomePage'
 import ProductDetail from '@/pages/product/ProductDetail'
 import ProductList from '@/pages/product/ProductList'
@@ -19,6 +20,7 @@ const Router = () => {
                         <Route index element={<ProductPage />} />
                         <Route path='detail/:slug' element={<ProductDetail />} />
                         <Route path='list/:slug' element={<ProductList />} />
+                        <Route path='checkout' element={<Checkout />} />
                     </Route>
                 </Route>
                 <Route element={<LayoutAuth />}>

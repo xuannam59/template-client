@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export interface cartSate {
   _id: string;
   productList: {
-    _id?: string
+    _id: string
     productId: IProducts,
     color: string,
     quantity: number

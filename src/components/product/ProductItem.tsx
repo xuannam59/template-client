@@ -1,7 +1,6 @@
 import { IProducts } from "@/types/backend"
 import { VND } from "@/utils/handleCurrency"
-import { Button, Rate, Typography } from "antd"
-import { TbShoppingCart } from "react-icons/tb"
+import { Rate, Typography } from "antd"
 import { Link } from "react-router"
 
 interface IProps {
@@ -46,9 +45,6 @@ const ProductItem = (props: IProps) => {
                             <Rate disabled defaultValue={2} style={{ fontSize: 16 }} />
                             <Paragraph className="m-0">Đã bán {sales}</Paragraph>
                         </div>
-                    </div>
-                    <div className="col" >
-                        <Button style={{ width: "100%" }} className="fs-6" icon={<TbShoppingCart />}>Add to Cart</Button>
                     </div>
                 </div>
             </div>

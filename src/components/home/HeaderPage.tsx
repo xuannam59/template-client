@@ -1,13 +1,13 @@
-import { callLogOut, callRemoveProductToCart } from '@/apis/api';
+import { callLogOut } from '@/apis/api';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { doLogOutAction } from '@/redux/reducers/auth.reducer';
-import { Avatar, Badge, Button, Card, Divider, Drawer, Dropdown, Layout, List, Menu, MenuProps, message, Modal, notification, Space, Tag, Typography } from 'antd'
-import { useEffect, useState } from 'react';
-import { TbBell, TbChecklist, TbLogout, TbMenu2, TbSearch, TbShoppingCart, TbTrash, TbUser } from 'react-icons/tb';
-import { Link, useLocation } from 'react-router';
-import HeaderInputSearch from './HeaderInputSearch';
 import { VND } from '@/utils/handleCurrency';
-import { doGetCart } from '@/redux/reducers/cart.reducer';
+import { Avatar, Badge, Button, Card, Divider, Drawer, Dropdown, Layout, List, Menu, MenuProps, Space, Tag, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { TbBell, TbChecklist, TbLogout, TbMenu2, TbSearch, TbShoppingCart, TbUser } from 'react-icons/tb';
+import { Link, useLocation, useNavigate } from 'react-router';
+import ButtonRemoveCartItem from '../cart/ButtonRemoveCartItem';
+import HeaderInputSearch from './HeaderInputSearch';
 
 type MenuItem = Required<MenuProps>['items'][number];
 const { Text, Title, Paragraph } = Typography
@@ -40,6 +40,8 @@ const HeaderPage = () => {
     }
   }, [location]);
 
+  const navigate = useNavigate()
+
   const items: MenuItem[] = [
     {
       label: <Link to={"/"}>Home</Link>,
@@ -61,17 +63,17 @@ const HeaderPage = () => {
 
   const itemsDropDown: MenuProps['items'] = [
     {
-      label: <Link to={"/user/account"}>My Account</Link>,
+      label: <Link to={"/user/account"}>Tài khoản</Link>,
       key: 'myAccount',
       icon: <TbUser size={20} />
     },
     {
-      label: <Link to={"/user/order"}>Order</Link>,
+      label: <Link to={"/user/order"}>Đơn đặt hàng</Link>,
       key: 'Order',
       icon: <TbChecklist size={20} />
     },
     {
-      label: 'Logout',
+      label: 'Đăng xuất',
       key: 'Logout',
       icon: <TbLogout size={20} />,
       onClick: async () => {
@@ -83,23 +85,6 @@ const HeaderPage = () => {
       }
     },
   ];
-
-  const handleRemoveCartItem = async (data: { id: string, color: string }) => {
-    try {
-      const res = await callRemoveProductToCart(data.id, data.color);
-      if (res.data) {
-        dispatch(doGetCart(res.data));
-        message.success("xoá thành công sản phẩm khỏi giỏ hàng");
-      } else {
-        notification.error({
-          message: "Error delete",
-          description: res.message
-        })
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
   return (
     <>
       <Header style={{
@@ -137,12 +122,12 @@ const HeaderPage = () => {
             <Space size={"middle"}>
               <TbSearch size={25} style={{ cursor: "pointer" }} onClick={() => setIsOpenSearch(true)} />
               <Dropdown
-                trigger={["click"]}
+                trigger={["hover"]}
                 placement={"bottom"}
                 dropdownRender={() => (
                   <>
                     <Card className='shadow' style={{ minWidth: 410 }}>
-                      <Paragraph>Có {cartUser.productList.length} sản phẩm trong giỏ hàng </Paragraph>
+                      <Paragraph>Có <strong>{cartUser.productList.length}</strong> sản phẩm trong giỏ hàng </Paragraph>
                       <Divider className='m-0' />
                       <div style={{ maxHeight: "378px", overflowY: "auto" }}>
                         <List
@@ -151,18 +136,7 @@ const HeaderPage = () => {
                             <List.Item
                               key={item.productId._id}
                               extra={
-                                <Button
-                                  icon={<TbTrash size={22} />}
-                                  onClick={() => Modal.confirm({
-                                    title: "Xác nhận",
-                                    content: "Bạn chắc chắn muốn xoá sản phẩm này",
-                                    onOk: async () => {
-                                      await handleRemoveCartItem({ id: item.productId._id, color: item.color });
-                                      console.log(item._id);
-                                    }
-                                  })}
-                                  danger
-                                  type='text' />
+                                <ButtonRemoveCartItem id={item._id} />
                               }>
                               <List.Item.Meta
                                 avatar={
@@ -175,8 +149,8 @@ const HeaderPage = () => {
                                   <Link to={`/products/detail/${item.productId.slug}`}>
                                     <Text ellipsis className='fw-light'> {item.productId.title} </Text>
                                     <Paragraph className='m-0'>
-                                      {item.quantity} x
-                                      {VND.format(item.productId.price * (1 - item.productId.discountPercentage / 100))}
+                                      {item.quantity} x {
+                                        VND.format(item.productId.price * (1 - item.productId.discountPercentage / 100))}
                                     </Paragraph>
                                   </Link>
                                 </>}
@@ -197,16 +171,11 @@ const HeaderPage = () => {
 
                       <div className="mt-4">
                         <Button
-                          type='primary'
-                          ghost
-                          size='large'
-                          style={{ width: "100%" }}
-                        > Xem giỏ hàng</Button>
-                        <Button
                           className='mt-2'
                           type='primary'
                           size='large'
                           style={{ width: "100%" }}
+                          onClick={() => navigate("/products/checkout")}
                         > Thanh toán</Button>
                       </div>
                     </Card>

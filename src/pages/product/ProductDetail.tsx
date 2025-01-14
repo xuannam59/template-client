@@ -218,7 +218,7 @@ const ProductDetail = () => {
                                             />
                                             <InputNumber
                                                 variant="borderless"
-                                                style={{ width: "40px" }}
+                                                style={{ width: "50px" }}
                                                 controls={false}
                                                 min={0}
                                                 max={quantity}
