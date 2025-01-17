@@ -146,13 +146,11 @@ const HeaderPage = () => {
                                     shape='square'
                                   />}
                                 title={<>
-                                  <Link to={`/products/detail/${item.productId.slug}`}>
-                                    <Text ellipsis className='fw-light'> {item.productId.title} </Text>
-                                    <Paragraph className='m-0'>
-                                      {item.quantity} x {
-                                        VND.format(item.productId.price * (1 - item.productId.discountPercentage / 100))}
-                                    </Paragraph>
-                                  </Link>
+                                  <Text ellipsis className='fw-light'> {item.productId.title} </Text>
+                                  <Paragraph className='m-0'>
+                                    {item.quantity} x {
+                                      VND.format(item.productId.price * (1 - item.productId.discountPercentage / 100))}
+                                  </Paragraph>
                                 </>}
                                 description={<div className='d-flex align-items-center'>
                                   Màu sắc: <Tag

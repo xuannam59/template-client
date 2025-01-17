@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IForgotPassword, IGetAccount, IProducts } from "@/types/backend";
+import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IForgotPassword, IGetAccount, IProducts } from "@/types/backend";
 import axios from "./axios.customize";
 import { data } from "react-router";
 
@@ -56,6 +56,9 @@ export const callRemoveProductToCart = (id: string) => {
 
 export const callChangeProductType = (_id: string, value: number | string, type: string) => {
     return axios.patch<IBackendRes<ICart>>(`api/v1/carts/change-quantity`, { _id, value, type });
+}
+export const callCheckDiscountCode = (code: string, totalAmount: number) => {
+    return axios.get<IBackendRes<IDiscountCode>>(`api/v1/promotions/${code}`, { params: { totalAmount } });
 }
 
 export const callUploadSingleFile = (file: any) => {

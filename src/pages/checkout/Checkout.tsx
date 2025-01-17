@@ -1,164 +1,55 @@
-import { callChangeProductType } from "@/apis/api";
-import ButtonRemoveCartItem from "@/components/cart/ButtonRemoveCartItem";
-import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { cartSate, doGetCart } from "@/redux/reducers/cart.reducer";
-import { IProducts } from "@/types/backend";
+import { callCheckDiscountCode } from "@/apis/api";
+import ListCart from "@/components/checkout/ListCart";
+import { useAppSelector } from "@/redux/hook";
 import { VND } from "@/utils/handleCurrency";
-import { Avatar, Button, InputNumber, notification, Select, Space, Table, Tag, Typography } from "antd";
-import { ColumnProps } from "antd/es/table";
-import { useState } from "react";
-import { TbMinus, TbPlus } from "react-icons/tb";
+import { Button, Card, Divider, Input, message, notification, Space, Typography } from "antd";
+import { useEffect, useState } from "react";
 
-const { Title, Paragraph } = Typography
+const { Title, Text } = Typography
 const Checkout = () => {
     const [isLoading, setIsLoading] = useState(false);
-
-    const dispatch = useAppDispatch();
+    const [discountCode, setDiscountCode] = useState("");
+    const [discountValue, setDiscountValue] = useState<{
+        type: string,
+        value: number,
+        maxValue: number
+    }>({ type: "", value: 0, maxValue: 0 });
     const productList = useAppSelector(state => state.cart.productList);
-    const columns: ColumnProps<cartSate["productList"][number]>[] = [
-        {
-            title: "STT",
-            key: "index",
-            align: "center",
-            render: (_, _1, index) => {
-                return <>{index + 1}</>
-            }
-        },
-        {
-            title: "Sản phẩm",
-            key: "product",
-            width: 350,
-            render: (item: cartSate["productList"][number]) => {
-                return <>
-                    <Space>
-                        <Avatar className="d-none d-lg-block" src={item.productId.images[0]} size={52} shape="square" />
-                        <Paragraph
-                            ellipsis={{ rows: 2, tooltip: item.productId.title }}
-                            style={{ fontSize: 13, fontWeight: 600, marginBottom: "auto" }}>
-                            {item.productId.title}
-                        </Paragraph>
-                    </Space>
-                </>
-            }
-        },
-        {
-            title: "Số lượng",
-            key: "quantity",
-            align: "center",
-            render: (product: cartSate["productList"][number]) => {
-                const productQuantity = product.productId.versions.find(item => item.color === product.color)?.quantity ?? 0;
-                return <>
-                    <Space
-                        size={"middle"}
-                        align="center" >
-                        <div className="button-grounds">
-                            <Button
-                                loading={isLoading}
-                                disabled={product.quantity <= 1}
-                                type="text"
-                                icon={<TbMinus size={20} />}
-                                onClick={() => handleChangeProductInCart(product._id, product.quantity - 1, "quantity")}
-                            />
-                            <InputNumber
-                                disabled={isLoading}
-                                variant="borderless"
-                                style={{ width: "40px" }}
-                                controls={false}
-                                min={1}
-                                value={product.quantity}
-                                max={productQuantity}
-                                onBlur={(e) => {
-                                    const minQuantity = Math.min(+e.target.value, productQuantity);
-                                    handleChangeProductInCart(product._id, minQuantity, "quantity")
-                                }}
-                            />
-                            <Button
-                                loading={isLoading}
-                                disabled={product.quantity >= productQuantity}
-                                type="text"
-                                icon={<TbPlus size={20} />}
-                                onClick={() => handleChangeProductInCart(product._id, product.quantity + 1, "quantity")}
-                            />
-                        </div>
-                    </Space>
-                </>
-            }
-        },
-        {
-            title: "Đơn giá",
-            key: "price",
-            align: "center",
-            dataIndex: "productId",
-            render: (product: IProducts) => {
-                return <>
-                    {VND.format(product.price * (1 - product.discountPercentage / 100))}
-                </>
-            }
-        },
-        {
-            title: "Màu Sắc",
-            dataIndex: "",
-            align: "center",
-            key: "color",
-            render: (product: cartSate["productList"][number]) => {
-                const colorOptions = product.productId.versions.map(version => version.color);
-                return (
-                    <Select
-                        disabled={isLoading}
-                        value={product.color}
-                        onChange={(newColor) => handleChangeProductInCart(product._id, newColor, "color")}
-                        style={{ width: 70 }}
-                    >
-                        {colorOptions.map(color => (
-                            <Select.Option key={color} value={color}>
-                                <div className="d-flex align-items-center">
-                                    <Tag color={color} style={{ width: 20, height: 20, border: "2px solid #2121211a" }} />
-                                </div>
-                            </Select.Option>
-                        ))}
-                    </Select>
-                );
-            }
-        },
-        {
-            title: "Thành tiền",
-            key: "totalAmount",
-            align: "center",
-            render: (item) => {
-                return <>
-                    {VND.format(item.quantity * item.productId.price * (1 - item.productId.discountPercentage / 100))}
-                </>
-            }
-        },
-        {
-            title: "",
-            key: "action",
-            align: "center",
-            dataIndex: "",
-            render: (item: cartSate["productList"][number]) => {
-                return <>
-                    <ButtonRemoveCartItem id={item._id} />
-                </>
-            },
-        }
-    ];
+    const [grandTotal, setGrandTotal] = useState(0);
+    const totalAmount = productList.reduce((a, b) =>
+        a + b.quantity * b.productId.price * (1 - b.productId.discountPercentage / 100)
+        , 0) ?? 0;
 
-    const handleChangeProductInCart = async (id: string, value: number | string, type: string) => {
+    useEffect(() => {
+        if (discountValue.value && productList.length > 0) {
+            switch (discountValue.type) {
+                case "percent":
+                    setGrandTotal(Math.min(discountValue.maxValue, totalAmount * discountValue.value / 100))
+                    break;
+                default:
+                    setGrandTotal(discountValue.value);
+                    break;
+            }
+        }
+    }, [discountValue]);
+
+    const handleCheckDiscountCode = async (code: string, totalAmount: number) => {
         setIsLoading(true);
         try {
-            const res = await callChangeProductType(id, value, type);
+            const res = await callCheckDiscountCode(code, totalAmount);
             if (res.data) {
-                dispatch(doGetCart(res.data));
+                setDiscountValue({ type: res.data.type, value: res.data.value, maxValue: res.data.maxValue });
+                message.success("Thêm mã giảm giá thành công");
             } else {
                 notification.error({
-                    message: "Error Change quantity",
+                    message: "Error",
                     description: res.message
                 });
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
     }
     return (
@@ -166,20 +57,58 @@ const Checkout = () => {
             <div className="container-fluid">
                 <div className="container mt-4">
                     <div className="row">
-                        <div className="col-12 col-md-9">
-                            <Title style={{ fontWeight: 400 }} level={2}>Thanh toán</Title>
-                            <Table
-                                dataSource={productList}
-                                columns={columns}
-                                rowKey="_id"
-                                pagination={false}
-                                scroll={{
-                                    x: "max-content"
-                                }}
-                            />
+                        <div className="col-12 col-lg-9">
+                            <Title style={{ fontWeight: 400 }} level={2} >Thanh toán</Title>
+                            <ListCart />
                         </div>
-                        <div className="col-12 col-md-3">
-                            ádasdasd
+                        <div className="col-12 col-lg-3 mt-lg-5 mt-3">
+                            <Card
+                                title={"Tổng tiền"}
+                                extra={<>
+                                    <Title level={5} className="mb-0">
+                                        {VND.format(totalAmount)}
+                                    </Title>
+                                </>}>
+                                <div className="d-flex flex-column">
+                                    <Text type="secondary">
+                                        Mã giảm giá
+                                    </Text>
+                                    <Space.Compact>
+                                        <Input
+                                            placeholder="Code"
+                                            value={discountCode}
+                                            onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                                            allowClear
+                                        />
+                                        <Button
+                                            type="primary"
+                                            onClick={() => handleCheckDiscountCode(discountCode, totalAmount)}
+                                            disabled={!discountCode}
+                                            loading={isLoading}
+                                        >Apply</Button>
+                                    </Space.Compact>
+                                    <Space className="mt-3" direction="vertical">
+                                        <Text>
+                                            Mã giảm giá: {discountValue.type === "percent" ?
+                                                `${discountValue.value}%`
+                                                :
+                                                VND.format(discountValue.value)
+                                            }
+                                        </Text>
+                                        <Text>
+                                            {grandTotal > 0 &&
+                                                `Chiết khấu: - ${VND.format(grandTotal)}`
+                                            }
+                                        </Text>
+                                    </Space>
+                                    <Divider style={{ margin: "12px 0" }} />
+                                    <Space style={{ width: "100%", justifyContent: "space-between" }}>
+                                        <Title level={4}>Thành tiền: </Title>
+                                        <Title level={4}>{VND.format(totalAmount - grandTotal)}</Title>
+                                    </Space>
+                                    <Button style={{ width: "100%" }} type="primary">Tiếp tục</Button>
+                                </div>
+                            </Card>
                         </div>
                     </div>
                 </div>

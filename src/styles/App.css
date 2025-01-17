@@ -104,6 +104,10 @@ a {
   padding: 0 12px;
 }
 
+.button-grounds .ant-input-number-input {
+  padding: 4px;
+}
+
 .btn-add-cart {
   width: 100%;
   border-radius: 8px;

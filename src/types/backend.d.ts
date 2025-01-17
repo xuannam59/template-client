@@ -132,3 +132,17 @@ export interface ICart {
     userId?: string
     productList: IProducts
 }
+
+export interface IDiscountCode {
+    _id: string
+    title: string
+    code: string
+    value: number
+    quantityAvailable: number
+    maxValue: number
+    minValue: number
+    type: string
+    startAt: string
+    endAt: string
+    slug: string
+}
