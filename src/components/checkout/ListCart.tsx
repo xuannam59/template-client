@@ -9,7 +9,7 @@ import { TbMinus, TbPlus } from "react-icons/tb";
 import ButtonRemoveCartItem from "../cart/ButtonRemoveCartItem";
 import { callChangeProductType } from "@/apis/api";
 
-const { Paragraph } = Typography
+const { Paragraph, Title } = Typography
 
 const ListCart = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -164,6 +164,7 @@ const ListCart = () => {
     }
     return (
         <>
+            <Title style={{ fontWeight: 400 }} level={2} >Thanh toán</Title>
             <Table
                 dataSource={productList}
                 columns={columns}

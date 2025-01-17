@@ -1,5 +1,6 @@
 import { callCheckDiscountCode } from "@/apis/api";
 import ListCart from "@/components/checkout/ListCart";
+import ShippingAddress from "@/components/checkout/ShippingAddress";
 import { useAppSelector } from "@/redux/hook";
 import { VND } from "@/utils/handleCurrency";
 import { Button, Card, Divider, Input, message, notification, Space, Typography } from "antd";
@@ -9,13 +10,11 @@ const { Title, Text } = Typography
 const Checkout = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [discountCode, setDiscountCode] = useState("");
-    const [discountValue, setDiscountValue] = useState<{
-        type: string,
-        value: number,
-        maxValue: number
-    }>({ type: "", value: 0, maxValue: 0 });
+    const [discountValue, setDiscountValue] = useState({ type: "", value: 0, maxValue: 0 });
     const productList = useAppSelector(state => state.cart.productList);
     const [grandTotal, setGrandTotal] = useState(0);
+    const [checkoutStep, setCheckoutStep] = useState("checkout");
+
     const totalAmount = productList.reduce((a, b) =>
         a + b.quantity * b.productId.price * (1 - b.productId.discountPercentage / 100)
         , 0) ?? 0;
@@ -52,14 +51,27 @@ const Checkout = () => {
             setIsLoading(false);
         }
     }
+
+    const renderComponent = () => {
+        switch (checkoutStep) {
+            case "address":
+                return <ShippingAddress onSelectAddress={(value) => {
+                    console.log(value);
+                    setCheckoutStep("paymentMethod")
+                }} />;
+
+            default:
+                return <ListCart />
+        }
+    }
+
     return (
         <>
             <div className="container-fluid">
                 <div className="container mt-4">
                     <div className="row">
                         <div className="col-12 col-lg-9">
-                            <Title style={{ fontWeight: 400 }} level={2} >Thanh toán</Title>
-                            <ListCart />
+                            {renderComponent()}
                         </div>
                         <div className="col-12 col-lg-3 mt-lg-5 mt-3">
                             <Card
@@ -106,7 +118,12 @@ const Checkout = () => {
                                         <Title level={4}>Thành tiền: </Title>
                                         <Title level={4}>{VND.format(totalAmount - grandTotal)}</Title>
                                     </Space>
-                                    <Button style={{ width: "100%" }} type="primary">Tiếp tục</Button>
+                                    <Button
+                                        style={{ width: "100%" }}
+                                        type="primary"
+                                        onClick={() => setCheckoutStep("address")}
+                                    >
+                                        Tiếp tục</Button>
                                 </div>
                             </Card>
                         </div>

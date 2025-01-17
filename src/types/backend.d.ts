@@ -146,3 +146,8 @@ export interface IDiscountCode {
     endAt: string
     slug: string
 }
+
+export interface ISelectModel {
+    label: string,
+    value: string
+}
