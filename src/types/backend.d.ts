@@ -151,3 +151,17 @@ export interface ISelectModel {
     label: string,
     value: string
 }
+
+export interface IUserAddress {
+    _id: string
+    name: string
+    phoneNumber: string
+    homeNo: string
+    province: string
+    district: string
+    ward: string
+    isDefault: boolean
+
+    createdAt?: string
+    updatedAt?: string
+}

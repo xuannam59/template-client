@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IForgotPassword, IGetAccount, IProducts } from "@/types/backend";
+import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IForgotPassword, IGetAccount, IProducts, IUserAddress } from "@/types/backend";
 import axios from "./axios.customize";
 
 export const callLogin = (email: string, password: string) => {
@@ -54,16 +54,15 @@ export const callRemoveProductToCart = (id: string) => {
 }
 
 export const callChangeProductType = (_id: string, value: number | string, type: string) => {
-    return axios.patch<IBackendRes<ICart>>(`api/v1/carts/change-quantity`, { _id, value, type });
+    return axios.patch<IBackendRes<ICart>>(`api/v1/carts/change-product-type`, { _id, value, type });
 }
 
 export const callCheckDiscountCode = (code: string, totalAmount: number) => {
     return axios.get<IBackendRes<IDiscountCode>>(`api/v1/promotions/${code}`, { params: { totalAmount } });
 }
 
-export const callAddNewAddress = (name: string, phoneNumber: string, homeNo: string, province: string, district: string, ward: string, isDefault: boolean,
-) => {
-    return axios.post<IBackendRes<string>>('api/v1/carts/add-address', { name, phoneNumber, homeNo, province, district, ward, isDefault })
+export const callAddNewAddress = (name: string, phoneNumber: string, homeNo: string, province: string, district: string, ward: string, isDefault: boolean) => {
+    return axios.post<IBackendRes<IUserAddress>>('api/v1/carts/add-user-address', { name, phoneNumber, homeNo, province, district, ward, isDefault })
 }
 
 export const callUploadSingleFile = (file: any) => {

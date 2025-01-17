@@ -1,7 +1,9 @@
 import { callAddNewAddress } from "@/apis/api";
+import { useAppDispatch } from "@/redux/hook";
+import { doAddNewAddress } from "@/redux/reducers/cart.reducer";
 import { ISelectModel } from "@/types/backend";
 import { replaceName } from "@/utils/replaceName";
-import { Button, Card, Checkbox, Form, Input, Select, Typography } from "antd";
+import { Button, Card, Checkbox, Form, Input, message, notification, Select, Typography } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -21,16 +23,18 @@ const { Title } = Typography
 
 const AddNewAddress = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [locationData, setLocationData] = useState<
-        {
-            provinces: ISelectModel[],
-            districts: ISelectModel[],
-            wards: ISelectModel[]
-        }>({
-            provinces: [],
-            districts: [],
-            wards: []
-        });
+    const [locationData, setLocationData] = useState<{
+        provinces: ISelectModel[],
+        districts: ISelectModel[],
+        wards: ISelectModel[]
+    }>({
+        provinces: [],
+        districts: [],
+        wards: []
+    });
+
+    const dispatch = useAppDispatch()
+
     const [form] = Form.useForm();
     useEffect(() => {
         fetchLocationData("provinces");
@@ -60,7 +64,19 @@ const AddNewAddress = () => {
         try {
             const res = await callAddNewAddress(name, phoneNumber, homeNo, province, district, ward, isDefault);
             if (res.data) {
-                console.log(res.data);
+                dispatch(doAddNewAddress(res.data));
+                message.success("Thêm mới địa chỉ thành công");
+                form.resetFields();
+                setLocationData({
+                    provinces: [],
+                    districts: [],
+                    wards: []
+                })
+            } else {
+                notification.error({
+                    message: "Error",
+                    description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                })
             }
         } catch (error) {
             console.log(error);

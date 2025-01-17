@@ -1,4 +1,4 @@
-import { IProducts } from "@/types/backend";
+import { IProducts, IUserAddress } from "@/types/backend";
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface cartSate {
@@ -8,12 +8,14 @@ export interface cartSate {
     productId: IProducts,
     color: string,
     quantity: number
-  }[]
+  }[],
+  userAddress: IUserAddress[]
 }
 
 const initialState: cartSate = {
   _id: "",
-  productList: []
+  productList: [],
+  userAddress: []
 }
 
 
@@ -24,10 +26,17 @@ const cartSlide = createSlice({
     doGetCart: (state, action) => {
       state._id = action?.payload?._id
       state.productList = action?.payload?.productList
+      state.userAddress = action?.payload?.userAddress
     },
+    doAddNewAddress: (state, action) => {
+      if (action?.payload?.isDefault && state.userAddress.length > 0) {
+        state.userAddress[0].isDefault = false;
+      }
+      state.userAddress.push(action?.payload);
+    }
   }
 });
 
 export const cartReducer = cartSlide.reducer
-export const { doGetCart } = cartSlide.actions;
+export const { doGetCart, doAddNewAddress } = cartSlide.actions;
 

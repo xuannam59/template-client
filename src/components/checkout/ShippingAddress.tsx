@@ -1,6 +1,6 @@
 import { Button, Divider } from "antd";
 import { useState } from "react";
-import AddNewAddress from "../address/AddnewAddress";
+import AddNewAddress from "../address/AddNewAddress";
 
 interface IProps {
     onSelectAddress: (val: any) => void
