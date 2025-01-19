@@ -114,3 +114,18 @@ a {
   transition: 0.5s;
   height: 80px;
 }
+
+.ant-steps-item-content {
+  margin-top: 0 !important;
+}
+
+.card-userAddress:hover {
+  box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+  -webkit-box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+  -moz-box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+  transition: 500ms;
+}
+
+.card-userAddress.active {
+  border: 2px solid rgba(125, 189, 68, 0.5);
+}

@@ -3,8 +3,9 @@ import ListCart from "@/components/checkout/ListCart";
 import ShippingAddress from "@/components/checkout/ShippingAddress";
 import { useAppSelector } from "@/redux/hook";
 import { VND } from "@/utils/handleCurrency";
-import { Button, Card, Divider, Input, message, notification, Space, Typography } from "antd";
+import { Button, Card, Divider, Input, message, notification, Space, Steps, Typography } from "antd";
 import { useEffect, useState } from "react";
+import { TbCreditCard, TbFileDescription, TbMapPin, TbStar } from "react-icons/tb";
 
 const { Title, Text } = Typography
 const Checkout = () => {
@@ -14,6 +15,8 @@ const Checkout = () => {
     const productList = useAppSelector(state => state.cart.productList);
     const [grandTotal, setGrandTotal] = useState(0);
     const [checkoutStep, setCheckoutStep] = useState("checkout");
+    const [currentStep, setCurrentStep] = useState(0);
+
 
     const totalAmount = productList.reduce((a, b) =>
         a + b.quantity * b.productId.price * (1 - b.productId.discountPercentage / 100)
@@ -71,6 +74,41 @@ const Checkout = () => {
                 <div className="container mt-4">
                     <div className="row">
                         <div className="col-12 col-lg-9">
+                            {checkoutStep !== "checkout" &&
+                                <>
+                                    <Card className="mt-5">
+                                        <Steps
+                                            current={currentStep}
+                                            labelPlacement="vertical"
+                                            onChange={(value) => setCurrentStep(value)}
+                                            items={[
+                                                {
+                                                    title: "Địa chỉ",
+                                                    icon: <Button
+                                                        icon={<TbMapPin size={22} />}
+                                                        type={currentStep === 0 ? "primary" : "text"}
+                                                        onClick={() => setCurrentStep(0)} />
+                                                },
+                                                {
+                                                    title: "Phương thúc thanh toán",
+                                                    icon: <Button
+                                                        icon={<TbCreditCard size={22} />}
+                                                        type={currentStep === 1 ? "primary" : "text"}
+                                                        onClick={() => setCurrentStep(1)} />
+                                                },
+                                                {
+                                                    title: "Kiểm tra",
+                                                    icon: <Button
+                                                        icon={<TbFileDescription size={22} />}
+                                                        type={currentStep === 2 ? "primary" : "text"}
+                                                        onClick={() => setCurrentStep(2)} />
+                                                }
+                                            ]}
+                                        />
+                                    </Card>
+                                </>
+                            }
+
                             {renderComponent()}
                         </div>
                         <div className="col-12 col-lg-3 mt-lg-5 mt-3">
