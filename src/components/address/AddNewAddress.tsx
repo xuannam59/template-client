@@ -68,7 +68,7 @@ const AddNewAddress = () => {
                 message.success("Thêm mới địa chỉ thành công");
                 form.resetFields();
                 setLocationData({
-                    provinces: [],
+                    provinces: locationData.provinces,
                     districts: [],
                     wards: []
                 })
@@ -118,7 +118,7 @@ const AddNewAddress = () => {
                             }
                         ]}
                     >
-                        <Input type="tel" allowClear placeholder="Số điện thoại" />
+                        <Input type="tel" allowClear maxLength={10} placeholder="Số điện thoại" />
                     </Form.Item>
                     <Form.Item
                         name={"homeNo"}

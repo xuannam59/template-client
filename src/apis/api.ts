@@ -62,7 +62,14 @@ export const callCheckDiscountCode = (code: string, totalAmount: number) => {
 }
 
 export const callAddNewAddress = (name: string, phoneNumber: string, homeNo: string, province: string, district: string, ward: string, isDefault: boolean) => {
-    return axios.post<IBackendRes<IUserAddress>>('api/v1/carts/add-user-address', { name, phoneNumber, homeNo, province, district, ward, isDefault })
+    return axios.post<IBackendRes<IUserAddress>>('api/v1/carts/add-user-address', {
+        name, phoneNumber, homeNo,
+        province, district, ward, isDefault
+    })
+}
+
+export const callDeleteAddress = (id: string) => {
+    return axios.delete<IBackendRes<ICart>>(`api/v1/carts/delete-user-address/${id}`)
 }
 
 export const callUploadSingleFile = (file: any) => {

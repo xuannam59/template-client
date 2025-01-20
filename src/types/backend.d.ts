@@ -131,6 +131,7 @@ export interface ICart {
     _id: string
     userId?: string
     productList: IProducts
+    userAddress: IUserAddress
 }
 
 export interface IDiscountCode {
