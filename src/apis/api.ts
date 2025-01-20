@@ -61,8 +61,17 @@ export const callCheckDiscountCode = (code: string, totalAmount: number) => {
     return axios.get<IBackendRes<IDiscountCode>>(`api/v1/promotions/${code}`, { params: { totalAmount } });
 }
 
-export const callAddNewAddress = (name: string, phoneNumber: string, homeNo: string, province: string, district: string, ward: string, isDefault: boolean) => {
+export const callAddNewAddress = (name: string, phoneNumber: string,
+    homeNo: string, province: string, district: string, ward: string, isDefault: boolean) => {
     return axios.post<IBackendRes<IUserAddress>>('api/v1/carts/add-user-address', {
+        name, phoneNumber, homeNo,
+        province, district, ward, isDefault
+    })
+}
+
+export const callEditAddress = (id: string, name: string, phoneNumber: string,
+    homeNo: string, province: string, district: string, ward: string, isDefault: boolean) => {
+    return axios.patch<IBackendRes<ICart>>(`api/v1/carts/edit-user-address/${id}`, {
         name, phoneNumber, homeNo,
         province, district, ward, isDefault
     })

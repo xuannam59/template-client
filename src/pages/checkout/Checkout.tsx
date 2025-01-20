@@ -5,7 +5,7 @@ import { useAppSelector } from "@/redux/hook";
 import { VND } from "@/utils/handleCurrency";
 import { Button, Card, Divider, Input, message, notification, Space, Steps, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { TbCreditCard, TbFileDescription, TbMapPin, TbStar } from "react-icons/tb";
+import { TbCreditCard, TbFileDescription, TbMapPin } from "react-icons/tb";
 
 const { Title, Text } = Typography
 const Checkout = () => {
@@ -90,7 +90,7 @@ const Checkout = () => {
                                                         onClick={() => setCurrentStep(0)} />
                                                 },
                                                 {
-                                                    title: "Phương thúc thanh toán",
+                                                    title: "Thanh toán",
                                                     icon: <Button
                                                         icon={<TbCreditCard size={22} />}
                                                         type={currentStep === 1 ? "primary" : "text"}

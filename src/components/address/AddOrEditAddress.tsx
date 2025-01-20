@@ -1,27 +1,23 @@
-import { callAddNewAddress } from "@/apis/api";
+import { callAddNewAddress, callEditAddress } from "@/apis/api";
 import { useAppDispatch } from "@/redux/hook";
-import { doAddNewAddress } from "@/redux/reducers/cart.reducer";
-import { ISelectModel } from "@/types/backend";
+import { doGetCart } from "@/redux/reducers/cart.reducer";
+import { ISelectModel, IUserAddress } from "@/types/backend";
 import { replaceName } from "@/utils/replaceName";
 import { Button, Card, Checkbox, Form, Input, message, notification, Select, Typography } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-interface FieldType {
-    name: string;
-    phoneNumber: string;
-    homeNo: string;
-    province: string;
-    district: string;
-    ward: string
-    isDefault: boolean;
+interface IProps {
+    isEditAddress?: IUserAddress
+    onCancel: () => void
 }
 
 const OPENAPILOCATION = "https://open.oapi.vn/location"
 
 const { Title } = Typography
 
-const AddNewAddress = () => {
+const AddOrEditAddress = (props: IProps) => {
+    const { isEditAddress, onCancel } = props;
     const [isLoading, setIsLoading] = useState(false);
     const [locationData, setLocationData] = useState<{
         provinces: ISelectModel[],
@@ -40,6 +36,13 @@ const AddNewAddress = () => {
         fetchLocationData("provinces");
     }, []);
 
+    useEffect(() => {
+        if (isEditAddress) {
+            form.setFieldsValue(isEditAddress);
+            handleFormatForm(isEditAddress)
+        }
+    }, [isEditAddress]);
+
     const fetchLocationData = async (url: string, id?: string) => {
         const api = `${OPENAPILOCATION}/${url}${id ? `/${id}` : ""}?page=0&size=1000`
         try {
@@ -48,13 +51,34 @@ const AddNewAddress = () => {
                 const data = res.data.data.map((item: any) => { return { label: item.name, value: item.id } });
                 const value: any = {};
                 value[url] = data;
-                setLocationData({ ...locationData, ...value });
+                setLocationData((prev) => ({ ...prev, [url]: data }));
+                return data;
             }
+            return [];
         } catch (error) {
             console.log(error);
+            return [];
         }
     }
-    const handleAddNewAddress = async (values: FieldType) => {
+
+    const handleFormatForm = async (values: IUserAddress) => {
+        const provinceSelect = locationData.provinces.find(item => item.label === values.province);
+        if (provinceSelect) {
+            form.setFieldValue("province", provinceSelect.value);
+            const districts = await fetchLocationData("districts", provinceSelect.value);
+            const districtSelect = districts.find((item: ISelectModel) => item.label === values.district);
+            if (districtSelect) {
+                form.setFieldValue("district", districtSelect.value);
+                const wards = await fetchLocationData("wards", districtSelect.value);
+                const wardSelect = wards.find((item: ISelectModel) => item.label === values.ward);
+                if (wardSelect) {
+                    form.setFieldValue("ward", wardSelect.value);
+                }
+            }
+        }
+    }
+
+    const handleAddOrEditAddress = async (values: IUserAddress) => {
         let { name, phoneNumber, homeNo, province, district, ward, isDefault } = values
         setIsLoading(true);
 
@@ -62,16 +86,22 @@ const AddNewAddress = () => {
         district = locationData.districts.find(item => item.value == district)?.label ?? "";
         ward = locationData.wards.find(item => item.value == ward)?.label ?? "";
         try {
-            const res = await callAddNewAddress(name, phoneNumber, homeNo, province, district, ward, isDefault);
+            const apiCall = isEditAddress
+                ? callEditAddress(isEditAddress._id, name, phoneNumber, homeNo, province, district, ward, isDefault)
+                : callAddNewAddress(name, phoneNumber, homeNo, province, district, ward, isDefault);
+
+            const res = await apiCall;
             if (res.data) {
-                dispatch(doAddNewAddress(res.data));
-                message.success("Thêm mới địa chỉ thành công");
+                dispatch(doGetCart(res.data));
+                message.success(isEditAddress ? "Cập nhật địa chỉ thành công" : "Thêm mới địa chỉ thành công");
+
                 form.resetFields();
                 setLocationData({
                     provinces: locationData.provinces,
                     districts: [],
                     wards: []
                 })
+                isEditAddress && onCancel()
             } else {
                 notification.error({
                     message: "Error",
@@ -93,7 +123,7 @@ const AddNewAddress = () => {
                     layout="vertical"
                     disabled={isLoading}
                     form={form}
-                    onFinish={handleAddNewAddress}
+                    onFinish={handleAddOrEditAddress}
                     initialValues={{ isDefault: true }}
                 >
                     <Form.Item
@@ -220,10 +250,18 @@ const AddNewAddress = () => {
                     </Form.Item>
                 </Form>
 
-                <Button onClick={() => form.submit()} type="primary" >Thêm địa chỉ</Button>
+                <Button onClick={() => form.submit()} type="primary" >{isEditAddress ? "Cập nhập" : "Thêm địa chỉ"}</Button>
+                {isEditAddress &&
+                    <Button
+                        className="ms-2"
+                        onClick={() => {
+                            onCancel();
+                            form.resetFields();
+                        }}>Huỷ</Button>
+                }
             </Card>
         </>
     )
 }
 
-export default AddNewAddress
+export default AddOrEditAddress

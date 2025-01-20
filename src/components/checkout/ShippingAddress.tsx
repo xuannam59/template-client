@@ -1,11 +1,11 @@
-import { Button, Card, Divider, List, message, Modal, notification, Space, Typography } from "antd";
-import { useEffect, useState } from "react";
-import AddNewAddress from "../address/AddNewAddress";
-import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { TbCheck, TbCheckbox, TbCircleCheckFilled, TbEdit, TbTrash } from "react-icons/tb";
-import { IUserAddress } from "@/types/backend";
 import { callDeleteAddress } from "@/apis/api";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { doGetCart } from "@/redux/reducers/cart.reducer";
+import { IUserAddress } from "@/types/backend";
+import { Button, Card, List, message, Modal, notification, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { TbCheck, TbEdit, TbTrash } from "react-icons/tb";
+import AddOrEditAddress from "../address/AddOrEditAddress";
 
 interface IProps {
     onSelectAddress: (val: any) => void
@@ -13,10 +13,12 @@ interface IProps {
 
 const { Title, Paragraph } = Typography;
 const ShippingAddress = (props: IProps) => {
-    const userAddress = useAppSelector(state => state.cart.userAddress);
     const { onSelectAddress } = props
     const [addressSelected, setAddressSelected] = useState<IUserAddress>();
+    const [isEditAddress, setIsEditAddress] = useState<IUserAddress>();
     const dispatch = useAppDispatch();
+    const userAddress = useAppSelector(state => state.cart.userAddress);
+
 
     useEffect(() => {
         if (userAddress && userAddress.length > 0) {
@@ -81,9 +83,11 @@ const ShippingAddress = (props: IProps) => {
                                         <div className="row">
                                             <div className="col">
                                                 <Button
-                                                    type="link"
+                                                    color="primary"
+                                                    variant="text"
                                                     style={{ width: "100%" }}
                                                     icon={<TbEdit size={22} />}
+                                                    onClick={() => setIsEditAddress(item)}
                                                 >Chỉnh sửa</Button>
                                             </div>
                                             <div className="col">
@@ -118,7 +122,12 @@ const ShippingAddress = (props: IProps) => {
             </Card>
 
             <div className="mt-3">
-                <AddNewAddress />
+                <AddOrEditAddress
+                    isEditAddress={isEditAddress}
+                    onCancel={() => {
+                        setIsEditAddress(undefined);
+                    }}
+                />
             </div>
         </>
     )
