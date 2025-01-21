@@ -1,5 +1,7 @@
 import { callCheckDiscountCode } from "@/apis/api";
 import ListCart from "@/components/checkout/ListCart";
+import PaymentMethod from "@/components/checkout/PaymentMethod"
+import Reviews from "@/components/checkout/Reviews";
 import ShippingAddress from "@/components/checkout/ShippingAddress";
 import { useAppSelector } from "@/redux/hook";
 import { VND } from "@/utils/handleCurrency";
@@ -12,11 +14,14 @@ const Checkout = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [discountCode, setDiscountCode] = useState("");
     const [discountValue, setDiscountValue] = useState({ type: "", value: 0, maxValue: 0 });
-    const productList = useAppSelector(state => state.cart.productList);
     const [grandTotal, setGrandTotal] = useState(0);
-    const [checkoutStep, setCheckoutStep] = useState("checkout");
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState<number>();
+    const [paymentDetail, setPaymentDetail] = useState({
+        address: undefined,
+        methods: ""
+    });
 
+    const productList = useAppSelector(state => state.cart.productList);
 
     const totalAmount = productList.reduce((a, b) =>
         a + b.quantity * b.productId.price * (1 - b.productId.discountPercentage / 100)
@@ -56,13 +61,27 @@ const Checkout = () => {
     }
 
     const renderComponent = () => {
-        switch (checkoutStep) {
-            case "address":
+        switch (currentStep) {
+            case 0:
                 return <ShippingAddress onSelectAddress={(value) => {
+                    if (!value) {
+                        notification.error({
+                            message: "Lỗi",
+                            description: "Không tìm thấy địa chỉ"
+                        });
+                        return;
+                    }
                     console.log(value);
-                    setCheckoutStep("paymentMethod")
+                    setCurrentStep(1);
                 }} />;
-
+            case 1:
+                return <PaymentMethod
+                    onSelectPaymentMethod={(value) => {
+                        console.log(value);
+                        setCurrentStep(2);
+                    }} />;
+            case 2:
+                return <Reviews />;
             default:
                 return <ListCart />
         }
@@ -74,34 +93,33 @@ const Checkout = () => {
                 <div className="container mt-4">
                     <div className="row">
                         <div className="col-12 col-lg-9">
-                            {checkoutStep !== "checkout" &&
+                            {currentStep !== undefined &&
                                 <>
-                                    <Card className="mt-5">
+                                    <Card>
                                         <Steps
                                             current={currentStep}
                                             labelPlacement="vertical"
-                                            onChange={(value) => setCurrentStep(value)}
                                             items={[
                                                 {
                                                     title: "Địa chỉ",
                                                     icon: <Button
                                                         icon={<TbMapPin size={22} />}
                                                         type={currentStep === 0 ? "primary" : "text"}
-                                                        onClick={() => setCurrentStep(0)} />
+                                                    />
                                                 },
                                                 {
                                                     title: "Thanh toán",
                                                     icon: <Button
                                                         icon={<TbCreditCard size={22} />}
                                                         type={currentStep === 1 ? "primary" : "text"}
-                                                        onClick={() => setCurrentStep(1)} />
+                                                    />
                                                 },
                                                 {
                                                     title: "Kiểm tra",
                                                     icon: <Button
                                                         icon={<TbFileDescription size={22} />}
                                                         type={currentStep === 2 ? "primary" : "text"}
-                                                        onClick={() => setCurrentStep(2)} />
+                                                    />
                                                 }
                                             ]}
                                         />
@@ -111,7 +129,7 @@ const Checkout = () => {
 
                             {renderComponent()}
                         </div>
-                        <div className="col-12 col-lg-3 mt-lg-5 mt-3">
+                        <div className="col-12 col-lg-3 mt-lg-0 mt-3">
                             <Card
                                 title={"Tổng tiền"}
                                 extra={<>
@@ -156,12 +174,14 @@ const Checkout = () => {
                                         <Title level={4}>Thành tiền: </Title>
                                         <Title level={4}>{VND.format(totalAmount - grandTotal)}</Title>
                                     </Space>
-                                    <Button
-                                        style={{ width: "100%" }}
-                                        type="primary"
-                                        onClick={() => setCheckoutStep("address")}
-                                    >
-                                        Tiếp tục</Button>
+                                    {currentStep === undefined &&
+                                        <Button
+                                            style={{ width: "100%" }}
+                                            type="primary"
+                                            onClick={() => setCurrentStep(0)}
+                                        >
+                                            Tiếp tục</Button>
+                                    }
                                 </div>
                             </Card>
                         </div>

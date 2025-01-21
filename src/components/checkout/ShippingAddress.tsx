@@ -4,11 +4,11 @@ import { doGetCart } from "@/redux/reducers/cart.reducer";
 import { IUserAddress } from "@/types/backend";
 import { Button, Card, List, message, Modal, notification, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { TbCheck, TbEdit, TbTrash } from "react-icons/tb";
+import { TbCheck, TbChevronLeft, TbEdit, TbTrash } from "react-icons/tb";
 import AddOrEditAddress from "../address/AddOrEditAddress";
 
 interface IProps {
-    onSelectAddress: (val: any) => void
+    onSelectAddress: (val: IUserAddress | undefined) => void
 }
 
 const { Title, Paragraph } = Typography;
@@ -46,7 +46,8 @@ const ShippingAddress = (props: IProps) => {
     return (
         <>
             <Card className="mt-3">
-                <Title level={4}>Lựa chọn một địa điểm giao hàng</Title>
+                {/* <Button type="text" icon={<TbChevronLeft size={22} />}>Trở lại</Button> */}
+                <Title level={4} className="">Lựa chọn một địa điểm giao hàng</Title>
                 <Paragraph type="secondary">
                     Địa chỉ bạn muốn sử dụng có hiển thị bên dưới không? Nếu có, hãy chọn địa chỉ tương ứng.
                     Hoặc bạn có thể tạo một địa chỉ giao hàng mới. (tối đa 2 địa chỉ)
@@ -115,8 +116,10 @@ const ShippingAddress = (props: IProps) => {
                 />
                 <div className="mt-3">
                     <Button
+                        disabled={userAddress.length === 0}
                         onClick={() => onSelectAddress(addressSelected)}
-                    >Địa điểm giao hàng
+                        type="primary"
+                    >Tiếp tục
                     </Button >
                 </div>
             </Card>

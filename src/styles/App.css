@@ -123,9 +123,11 @@ a {
   box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
   -webkit-box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
   -moz-box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+  border: 1px solid #6252CD;
   transition: 500ms;
+
 }
 
 .card-userAddress.active {
-  border: 2px solid rgba(125, 189, 68, 0.5);
+  border: 1px solid rgba(125, 189, 68, 0.5);
 }

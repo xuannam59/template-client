@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { cartSate, doGetCart } from "@/redux/reducers/cart.reducer";
 import { IProducts } from "@/types/backend";
 import { VND } from "@/utils/handleCurrency";
-import { Avatar, Button, InputNumber, notification, Select, Space, Tag, Typography } from "antd";
+import { Avatar, Button, Card, InputNumber, notification, Select, Space, Tag, Typography } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
 import { useState } from "react";
 import { TbMinus, TbPlus } from "react-icons/tb";
@@ -164,17 +164,20 @@ const ListCart = () => {
     }
     return (
         <>
-            <Title style={{ fontWeight: 400 }} level={2} >Thanh toán</Title>
-            <Table
-                dataSource={productList}
-                columns={columns}
-                rowKey="_id"
-                pagination={false}
-                scroll={{
-                    x: "max-content"
-                }}
-            />
+            <Card>
+                <Title level={4} >Giỏ hàng</Title>
+                <Table
+                    dataSource={productList}
+                    columns={columns}
+                    rowKey="_id"
+                    pagination={false}
+                    scroll={{
+                        x: "max-content"
+                    }}
+                />
+            </Card>
         </>
+
     )
 }
 
