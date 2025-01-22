@@ -95,14 +95,14 @@ const HeaderPage = () => {
         width: '100%',
       }}>
         <div className="row">
-          <div className="col col-md-2 col-sm-2 d-block d-lg-none">
+          <div className="col d-block d-lg-none">
             <TbMenu2
               size={25}
               style={{ cursor: "pointer" }}
               onClick={() => setIsVisibleDrawer(true)}
             />
           </div> {/*Update*/}
-          <div className="col fs-3 text-sm-center text-lg-start">
+          <div className="col fs-3 text-sm-center text-lg-start d-none d-md-block">
             <Link to={"/"} style={{ color: "black" }}>
               <strong style={{ color: "#00a854" }}>J</strong>un<strong style={{ color: "#6252cd" }}>K</strong>un
             </Link>

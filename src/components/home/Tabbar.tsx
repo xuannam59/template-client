@@ -5,19 +5,20 @@ interface IProps {
     title: string,
     icon?: ReactNode
     level?: 1 | 2 | 3 | 4 | 5 | undefined;
+    textAlign?: "center" | "start" | "end" | undefined
 }
 
 const { Title } = Typography;
 
 const Tabbar = (props: IProps) => {
-    const { title, level, icon } = props
+    const { title, level, icon, textAlign } = props
     return (
         <>
             <div className="container">
-                <div className={`d-flex justify-content-center align-items-center`}>
+                <div className={`${textAlign && `text-${textAlign}`}`}>
                     {icon}
                     <Title
-                        style={{ fontWeight: 400, marginLeft: 4 }}
+                        style={{ fontWeight: 400, marginBottom: 0 }}
                         level={level ?? 1}>
                         {title}
                     </Title>

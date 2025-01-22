@@ -41,6 +41,10 @@ export const callGetProductDetail = (idOrSlug: string = "") => {
     return axios.get<IBackendRes<IProducts>>(`api/v1/products/${idOrSlug}`);
 }
 
+export const callGetRelatedProduct = (slug: string = "") => {
+    return axios.get<IBackendRes<IProducts[]>>(`api/v1/products/get-related/${slug}`);
+}
+
 export const callGetUserCart = (userId: string | undefined) => {
     return axios.post<IBackendRes<ICart>>(`api/v1/carts`, { userId });
 }

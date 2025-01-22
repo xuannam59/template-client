@@ -15,7 +15,7 @@ const ProductItem = (props: IProps) => {
     return (
         <div
             key={item._id}
-            className="col-6 col-md-4 col-lg-3 pt-3 pb-3"
+            className="col-7 col-md-4 col-lg-3 pt-md-3 pb-md-3"
         >
             <div className="product-item">
                 <div>
@@ -41,9 +41,13 @@ const ProductItem = (props: IProps) => {
                 </div>
                 <div className="row g-2 flex-column">
                     <div className="col">
-                        <div className="d-flex justify-content-between align-items-center">
-                            <Rate disabled defaultValue={2} style={{ fontSize: 16 }} />
-                            <Paragraph className="m-0">Đã bán {sales}</Paragraph>
+                        <div className="row">
+                            <div className="col-12 col-md-6">
+                                <Rate disabled defaultValue={2} style={{ fontSize: 16 }} />
+                            </div>
+                            <div className="col-12 col-md-6 text-md-end">
+                                <Paragraph className="m-0">Đã bán {sales}</Paragraph>
+                            </div>
                         </div>
                     </div>
                 </div>

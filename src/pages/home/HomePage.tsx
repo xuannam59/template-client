@@ -96,7 +96,7 @@ const HomePage = () => {
             level={2}
           />
           <div className="row">
-            {bestSellers.map(item => <ProductItem item={item} />)}
+            {bestSellers.map(item => <ProductItem key={item._id} item={item} />)}
           </div>
         </Section>
       </div>

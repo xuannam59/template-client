@@ -1,14 +1,16 @@
-import { callAddProductToCart, callGetProductDetail } from "@/apis/api";
+import { callAddProductToCart, callGetProductDetail, callGetRelatedProduct } from "@/apis/api";
 import { IProducts } from "@/types/backend";
-import { Breadcrumb, Button, InputNumber, message, notification, Rate, Space, Typography } from "antd";
+import { Breadcrumb, Button, InputNumber, message, notification, Rate, Space, Tabs, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router"
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { VND } from "@/utils/handleCurrency";
 import { TbCheck, TbMinus, TbPlus } from "react-icons/tb";
-import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { useAppDispatch } from "@/redux/hook";
 import { doGetCart } from "@/redux/reducers/cart.reducer";
+import Tabbar from "@/components/home/Tabbar";
+import ProductItem from "@/components/product/ProductItem";
 
 
 const { Title, Text, Paragraph } = Typography;
@@ -16,6 +18,7 @@ const { Title, Text, Paragraph } = Typography;
 const ProductDetail = () => {
     const { slug } = useParams();
     const [dataDetail, setDataDetail] = useState<IProducts>();
+    const [relatedProducts, setRelatedProducts] = useState<IProducts[]>();
     const [selectColor, setSelectColor] = useState<string>("");
     const [selectedImage, setSelectedImage] = useState<{
         original: string,
@@ -26,7 +29,9 @@ const ProductDetail = () => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         fetchProductDetail()
+        getRelatedProducts()
     }, [slug]);
 
     const quantity = dataDetail ? dataDetail.versions.find(item => item.color === selectColor)?.quantity : 0;
@@ -51,6 +56,18 @@ const ProductDetail = () => {
             console.log(error);
         }
     }
+
+    const getRelatedProducts = async () => {
+        try {
+            const res = await callGetRelatedProduct(slug);
+            if (res.data) {
+                setRelatedProducts(res.data)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const handleAddItem = async () => {
         setIsLoading(true)
         try {
@@ -254,6 +271,52 @@ const ProductDetail = () => {
                                 </div>
                             </div>
                         </div>
+                        <div className="mt-3">
+                            <Tabs
+                                items={[
+                                    {
+                                        key: "descriptions",
+                                        label: "Mô tả",
+                                        children: <>
+                                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Placeat, debitis?
+                                                Tempora necessitatibus reiciendis illum labore placeat. Accusantium deserunt
+                                                qui, possimus, est deleniti repellendus corporis harum quia neque facere quos
+                                                vitae.
+                                            </p>
+                                        </>
+                                    },
+                                    {
+                                        key: "additionalInformation",
+                                        label: "Bổ sung thêm",
+                                        children: <>
+                                            <p>
+                                                Bổ sung thêm.....
+                                            </p>
+                                        </>
+                                    },
+                                    {
+                                        key: "reviews",
+                                        label: "Đánh giá",
+                                        children: <>
+                                            <p>
+                                                Đánh giá ...
+                                            </p>
+                                        </>
+                                    }
+                                ]}
+                            />
+                        </div>
+                        {relatedProducts && relatedProducts.length > 0 &&
+                            <div className="mt-3">
+                                <Tabbar
+                                    title="Sản phẩm liên quan"
+                                    textAlign="start"
+                                />
+                                <div className="row justify-content-center">
+                                    {relatedProducts.map(item => <ProductItem key={item._id} item={item} />)}
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             }
