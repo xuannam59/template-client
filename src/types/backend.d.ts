@@ -15,6 +15,7 @@ export interface IBackendResWithPagination<T> {
             pageSize: number;
             pages: number;
             totalItems: number;
+            reviewScore?: number
         };
         result: T[]
     };
@@ -115,11 +116,15 @@ export interface IProducts {
         color: string
         quantity: number
     }[]
+    reviews: {
+        score: number
+        numberOf: number
+    }
     slug: string
     sales: number
-    ram?: string,
-    chip?: string,
-    ssd?: string,
+    ram?: string
+    chip?: string
+    ssd?: string
     gpu?: string
 
     isDeleted?: boolean
@@ -165,4 +170,21 @@ export interface IUserAddress {
 
     createdAt?: string
     updatedAt?: string
+}
+
+export interface IReview {
+    like: string[]
+    _id: string
+    comment: string
+    product_id: string
+    star: number
+    images: string[]
+    created_by: {
+        _id: string
+        name: string
+        avatar: string
+    }
+    isDeleted: boolean
+    createdAt: string
+    updatedAt: string
 }

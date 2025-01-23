@@ -11,6 +11,7 @@ import { useAppDispatch } from "@/redux/hook";
 import { doGetCart } from "@/redux/reducers/cart.reducer";
 import Tabbar from "@/components/home/Tabbar";
 import ProductItem from "@/components/product/ProductItem";
+import ProductReviews from "@/components/product/ProductReviews";
 
 
 const { Title, Text, Paragraph } = Typography;
@@ -37,7 +38,6 @@ const ProductDetail = () => {
     const quantity = dataDetail ? dataDetail.versions.find(item => item.color === selectColor)?.quantity : 0;
     const price = dataDetail ? dataDetail.price : 0;
     const newPrice = dataDetail ? dataDetail.price * (1 - dataDetail?.discountPercentage / 100) : 0;
-
     const fetchProductDetail = async () => {
         try {
             const res = await callGetProductDetail(slug);
@@ -132,24 +132,22 @@ const ProductDetail = () => {
                                 <div className="mt-3 mb-3 text-center">
                                     JunKun là đại lý ủy quyền chính thức của Apple tại Việt Nam
                                 </div>
-                                {dataDetail.description &&
-                                    <div className="text-center"
-                                        style={{
-                                            border: "1px solid #ccc",
-                                            borderRadius: "16px",
-                                            paddingTop: "12px"
-                                        }}
-                                    >
-                                        <div dangerouslySetInnerHTML={{ __html: dataDetail.description }} />
-                                    </div>
-                                }
+                                <div className="text-center py-2 px-2 px-md-0"
+                                    style={{
+                                        border: "1px solid #ccc",
+                                        borderRadius: "16px",
+                                    }}
+                                >
+                                    Sản phẩm chính hãng Apple mới 100% nguyên seal.
+                                    Phụ kiện chính hãng gồm: hộp trùng imei, sạc, cable, sách hướng dẫn
+                                </div>
                             </div>
                             <div className="col">
                                 <Title level={3}>{dataDetail?.title}-NEW</Title>
                                 <Space>
-                                    <Rate disabled defaultValue={5} />
-                                    <Text type="secondary">(5.0)</Text>
-                                    <Text type="secondary">(1.234)</Text>
+                                    <Rate disabled value={dataDetail.reviews.score} />
+                                    <Text type="secondary">({dataDetail.reviews.score})</Text>
+                                    <Text type="secondary">({dataDetail.reviews.numberOf})</Text>
                                 </Space>
                                 <div className="mt-3">
                                     <Space>
@@ -277,13 +275,7 @@ const ProductDetail = () => {
                                     {
                                         key: "descriptions",
                                         label: "Mô tả",
-                                        children: <>
-                                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Placeat, debitis?
-                                                Tempora necessitatibus reiciendis illum labore placeat. Accusantium deserunt
-                                                qui, possimus, est deleniti repellendus corporis harum quia neque facere quos
-                                                vitae.
-                                            </p>
-                                        </>
+                                        children: dataDetail.description
                                     },
                                     {
                                         key: "additionalInformation",
@@ -296,12 +288,10 @@ const ProductDetail = () => {
                                     },
                                     {
                                         key: "reviews",
-                                        label: "Đánh giá",
-                                        children: <>
-                                            <p>
-                                                Đánh giá ...
-                                            </p>
-                                        </>
+                                        label: `Đánh giá (${dataDetail.reviews.numberOf})`,
+                                        children: <ProductReviews
+                                            productId={dataDetail._id}
+                                        />
                                     }
                                 ]}
                             />

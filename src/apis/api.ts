@@ -1,5 +1,6 @@
-import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IForgotPassword, IGetAccount, IProducts, IUserAddress } from "@/types/backend";
+import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IForgotPassword, IGetAccount, IProducts, IReview, IUserAddress } from "@/types/backend";
 import axios from "./axios.customize";
+import exp from "constants";
 
 export const callLogin = (email: string, password: string) => {
     return axios.post<IBackendRes<IAccount>>("api/v1/auth/login", { email, password });
@@ -83,6 +84,10 @@ export const callEditAddress = (id: string, name: string, phoneNumber: string,
 
 export const callDeleteAddress = (id: string) => {
     return axios.delete<IBackendRes<ICart>>(`api/v1/carts/delete-user-address/${id}`)
+}
+
+export const callGetReviews = (query: string = "") => {
+    return axios.get<IBackendResWithPagination<IReview>>(`api/v1/reviews?${query}`);
 }
 
 export const callUploadSingleFile = (file: any) => {

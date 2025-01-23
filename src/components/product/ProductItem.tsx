@@ -1,5 +1,5 @@
 import { IProducts } from "@/types/backend"
-import { VND } from "@/utils/handleCurrency"
+import { compactNumber, VND } from "@/utils/handleCurrency"
 import { Rate, Typography } from "antd"
 import { Link } from "react-router"
 
@@ -11,7 +11,7 @@ const { Paragraph, Title } = Typography
 const ProductItem = (props: IProps) => {
     const { item } = props
     const price = item.price * (1 - item.discountPercentage / 100);
-    const sales = new Intl.NumberFormat('en', { notation: 'compact' }).format(item.sales);
+    const sales = compactNumber.format(item.sales);
     return (
         <div
             key={item._id}
@@ -43,7 +43,7 @@ const ProductItem = (props: IProps) => {
                     <div className="col">
                         <div className="row">
                             <div className="col-12 col-md-6">
-                                <Rate disabled defaultValue={2} style={{ fontSize: 16 }} />
+                                <Rate disabled value={item.reviews.score} style={{ fontSize: 16 }} />
                             </div>
                             <div className="col-12 col-md-6 text-md-end">
                                 <Paragraph className="m-0">Đã bán {sales}</Paragraph>
