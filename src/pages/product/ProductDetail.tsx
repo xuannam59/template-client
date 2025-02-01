@@ -269,13 +269,16 @@ const ProductDetail = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-3">
+                        <div className="my-3">
                             <Tabs
+
                                 items={[
                                     {
                                         key: "descriptions",
                                         label: "Mô tả",
-                                        children: dataDetail.description
+                                        children: <>
+                                            <div dangerouslySetInnerHTML={{ __html: dataDetail.description }} />
+                                        </>
                                     },
                                     {
                                         key: "additionalInformation",
@@ -292,6 +295,11 @@ const ProductDetail = () => {
                                         children: <ProductReviews
                                             productId={dataDetail._id}
                                         />
+                                    },
+                                    {
+                                        key: "discusses",
+                                        label: "Thảo luận",
+                                        children: "Thảo luận ...."
                                     }
                                 ]}
                             />

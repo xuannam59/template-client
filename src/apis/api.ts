@@ -90,6 +90,10 @@ export const callGetReviews = (query: string = "") => {
     return axios.get<IBackendResWithPagination<IReview>>(`api/v1/reviews?${query}`);
 }
 
+export const callChangeLike = (reviewId: string) => {
+    return axios.patch<IBackendRes<string>>(`api/v1/reviews/change-like/${reviewId}`);
+}
+
 export const callUploadSingleFile = (file: any) => {
     const bodyFormData = new FormData();
     bodyFormData.append("file", file);

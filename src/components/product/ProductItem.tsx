@@ -43,7 +43,7 @@ const ProductItem = (props: IProps) => {
                     <div className="col">
                         <div className="row">
                             <div className="col-12 col-md-6">
-                                <Rate disabled value={item.reviews.score} style={{ fontSize: 16 }} />
+                                <Rate allowHalf disabled value={item.reviews.score} style={{ fontSize: 16 }} />
                             </div>
                             <div className="col-12 col-md-6 text-md-end">
                                 <Paragraph className="m-0">Đã bán {sales}</Paragraph>
