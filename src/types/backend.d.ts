@@ -173,10 +173,11 @@ export interface IUserAddress {
 }
 
 export interface IReview {
-    like: string[]
     _id: string
     comment: string
+    like: string[]
     product_id: string
+    parent_id: string
     star: number
     images: string[]
     created_by: {
@@ -188,3 +189,5 @@ export interface IReview {
     createdAt: string
     updatedAt: string
 }
+
+export interface IDiscuss extends Omit<IReview, "images" | "like" | "star" | "product_id"> { }

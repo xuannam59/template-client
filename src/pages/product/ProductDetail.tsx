@@ -1,7 +1,7 @@
 import { callAddProductToCart, callGetProductDetail, callGetRelatedProduct } from "@/apis/api";
 import { IProducts } from "@/types/backend";
 import { Breadcrumb, Button, InputNumber, message, notification, Rate, Space, Tabs, Typography } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router"
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -12,6 +12,7 @@ import { doGetCart } from "@/redux/reducers/cart.reducer";
 import Tabbar from "@/components/home/Tabbar";
 import ProductItem from "@/components/product/ProductItem";
 import ProductReviews from "@/components/product/ProductReviews";
+import ProductDiscuss from "@/components/product/ProductDiscuss";
 
 
 const { Title, Text, Paragraph } = Typography;
@@ -28,6 +29,8 @@ const ProductDetail = () => {
     const [count, setCount] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useAppDispatch();
+
+    const tabsRef = useRef(null);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -269,9 +272,8 @@ const ProductDetail = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="my-3">
+                        <div className="my-3" ref={tabsRef}>
                             <Tabs
-
                                 items={[
                                     {
                                         key: "descriptions",
@@ -292,14 +294,12 @@ const ProductDetail = () => {
                                     {
                                         key: "reviews",
                                         label: `Đánh giá (${dataDetail.reviews.numberOf})`,
-                                        children: <ProductReviews
-                                            productId={dataDetail._id}
-                                        />
+                                        children: <ProductReviews productId={dataDetail._id} tabsRef={tabsRef} />
                                     },
                                     {
                                         key: "discusses",
                                         label: "Thảo luận",
-                                        children: "Thảo luận ...."
+                                        children: <ProductDiscuss productId={dataDetail._id} />
                                     }
                                 ]}
                             />

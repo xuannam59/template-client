@@ -1,6 +1,5 @@
-import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IForgotPassword, IGetAccount, IProducts, IReview, IUserAddress } from "@/types/backend";
+import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IDiscuss, IForgotPassword, IGetAccount, IProducts, IReview, IUserAddress } from "@/types/backend";
 import axios from "./axios.customize";
-import exp from "constants";
 
 export const callLogin = (email: string, password: string) => {
     return axios.post<IBackendRes<IAccount>>("api/v1/auth/login", { email, password });
@@ -92,6 +91,14 @@ export const callGetReviews = (query: string = "") => {
 
 export const callChangeLike = (reviewId: string) => {
     return axios.patch<IBackendRes<string>>(`api/v1/reviews/change-like/${reviewId}`);
+}
+
+export const callCreateDiscuss = (comment: string, parent_id: string) => {
+    return axios.post<IBackendRes<string>>(`api/v1/discuss`, { comment, parent_id });
+}
+
+export const callGetDiscuss = (query: string = "") => {
+    return axios.get<IBackendRes<IDiscuss[]>>(`api/v1/discuss?${query}`);
 }
 
 export const callUploadSingleFile = (file: any) => {

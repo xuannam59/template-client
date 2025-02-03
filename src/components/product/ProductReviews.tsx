@@ -1,34 +1,41 @@
 import { callChangeLike, callGetReviews } from "@/apis/api"
 import { useAppSelector } from "@/redux/hook";
 import { IReview } from "@/types/backend";
-import { Avatar, Image, List, Modal, Rate, Space, Typography } from "antd";
+import { Avatar, Image, List, Modal, notification, Rate, Space, Typography } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { TbClock, TbThumbUp, TbThumbUpFilled } from "react-icons/tb";
 import { useNavigate } from "react-router";
+import Comment from "./Comment";
 
 interface IProps {
     productId: string
+    tabsRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
 const { Title, Text, Paragraph } = Typography;
 const ProductReviews = (props: IProps) => {
-    const { productId } = props
-    const [isLoading, setIsLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalReview, setTotalReview] = useState(1);
-    const [reviewScore, setReviewScore] = useState<number | undefined>(0);
-    const [dataReviews, setDataReviews] = useState<IReview[]>();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const { productId, tabsRef } = props
     const navigate = useNavigate();
     const user = useAppSelector(state => state.auth.user);
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalReview, setTotalReview] = useState(1);
+    const [reviewScore, setReviewScore] = useState<number | undefined>(0);
+    const [dataReviews, setDataReviews] = useState<IReview[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         getReviews()
     }, [currentPage, productId]);
+
+    useEffect(() => {
+        if (tabsRef.current) {
+            tabsRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [currentPage]);
 
     const getReviews = async () => {
         setIsLoading(true);
@@ -59,8 +66,27 @@ const ProductReviews = (props: IProps) => {
         }
         try {
             const res = await callChangeLike(reviewId);
-            if (res.data)
-                getReviews();
+            if (res.data) {
+                setDataReviews(prevReviews =>
+                    prevReviews.map(review => {
+                        if (review._id === reviewId) {
+                            const isLiked = review.like.includes(user._id);
+                            const updatedLikes = isLiked
+                                ? review.like.filter(id => id !== user._id)
+                                : [...review.like, user._id];
+
+                            return { ...review, like: updatedLikes };
+                        }
+                        return review;
+                    })
+                );
+            }
+            else {
+                notification.error({
+                    message: "Error",
+                    description: "Lỗi rồi!"
+                })
+            }
         } catch (error) {
             console.log(error)
         }
@@ -78,7 +104,7 @@ const ProductReviews = (props: IProps) => {
                         <Rate value={reviewScore} disabled allowHalf />
                     </div>}
                     renderItem={(item) => (
-                        <List.Item>
+                        <List.Item className="ms-4">
                             <List.Item.Meta
                                 className="review-title"
                                 avatar={
@@ -102,7 +128,7 @@ const ProductReviews = (props: IProps) => {
                                 description={
                                     <>
                                         <Rate allowHalf value={item.star} disabled style={{ fontSize: "16px" }} />
-                                        <Paragraph className="mb-0">{item.comment}</Paragraph>
+                                        <Comment comment={item.comment} />
                                         {item.images.length > 0 &&
                                             <Space className="mt-2">
                                                 {item.images.map(item =>
@@ -144,7 +170,7 @@ const ProductReviews = (props: IProps) => {
                         </List.Item>
                     )}
 
-                    pagination={{
+                    pagination={totalReview > 5 && {
                         onChange: handleChangePagination,
                         current: currentPage,
                         total: totalReview,
