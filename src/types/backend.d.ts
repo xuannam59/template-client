@@ -186,8 +186,8 @@ export interface IReview {
         avatar: string
     }
     isDeleted: boolean
-    createdAt: string
-    updatedAt: string
+    createdAt?: Date
+    updatedAt?: Date
 }
 
 export interface IDiscuss extends Omit<IReview, "images" | "like" | "star" | "product_id"> { }

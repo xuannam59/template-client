@@ -1,37 +1,62 @@
 import { useAppSelector } from "@/redux/hook";
 import { IDiscuss } from "@/types/backend";
-import { Avatar, Button, Divider, Input, List, notification, Pagination, Typography } from "antd"
+import { Avatar, Button, Divider, Dropdown, Input, List, MenuProps, notification, Space, Typography } from "antd"
 import dayjs from "dayjs";
-import { TbClock, TbSend } from "react-icons/tb";
+import { TbClock, TbDots, TbSend } from "react-icons/tb";
 import Comment from "./Comment";
 import { useState } from "react";
 import DiscussList from "./DiscussList";
 import { callCreateDiscuss } from "@/apis/api";
 import relativeTime from 'dayjs/plugin/relativeTime'
 
-dayjs.extend(relativeTime);
 
 interface IProps {
     item: IDiscuss,
-    onAddNew: () => void
 }
 
 const { Text } = Typography;
 
 const DiscussItem = (props: IProps) => {
-    const { item, onAddNew } = props;
-    const user = useAppSelector(state => state.auth.user);
+    dayjs.extend(relativeTime);
+    const { item } = props;
     const [isRely, setIsRely] = useState(false);
     const [comment, setComment] = useState("");
+    const [dataRely, setDataRely] = useState<IDiscuss>();
+
+    const user = useAppSelector(state => state.auth.user);
+
+    const items: MenuProps['items'] = [
+        {
+            label: "Chỉnh sửa",
+            key: '0',
+        },
+        {
+            label: "Xoá",
+            key: '1',
+        }
+    ];
 
     const handleReply = async () => {
-        if (comment.length < 3)
-            return
+
         try {
             const res = await callCreateDiscuss(comment, item._id);
             if (res.data) {
+                const data: IDiscuss = {
+                    _id: res.data,
+                    comment: comment,
+                    parent_id: item._id,
+                    created_by: {
+                        _id: user._id,
+                        name: user.name,
+                        avatar: user.avatar
+                    },
+                    isDeleted: false,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                }
                 setComment("");
-                onAddNew();
+                setIsRely(false);
+                setDataRely(data)
             } else {
                 notification.error({
                     message: "Trả lời thất bại",
@@ -42,6 +67,7 @@ const DiscussItem = (props: IProps) => {
             console.log(error)
         }
     }
+
     return (
         <List.Item
             key={item._id}
@@ -66,30 +92,45 @@ const DiscussItem = (props: IProps) => {
                 description={
                     <>
                         <Comment comment={item.comment} />
-                        <div
-                            className="text-info mb-2"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => setIsRely(!isRely)}>Trả lời</div>
+                        <Space align="center">
+                            <Button
+                                className="p-0"
+                                size="small"
+                                type="link"
+                                onClick={() => setIsRely(!isRely)} >
+                                Trả lời
+                            </Button>
+
+                            <Dropdown menu={{ items }} trigger={['click']}>
+                                <TbDots size={20} style={{ cursor: "pointer" }} />
+                            </Dropdown>
+                        </Space>
                         {
                             isRely &&
                             <>
-                                <Input
-                                    onPressEnter={handleReply}
-                                    value={comment}
-                                    onChange={value => setComment(value.target.value)}
-                                    allowClear
-                                    suffix={<Button
-                                        type="text"
-                                        icon={<TbSend className="text-info" size={20} />}
-                                        onClick={handleReply}
-                                    />}
-                                />
+                                <div className="row">
+                                    <div className="col-12 col-md-8 col-lg-6">
+                                        <Input
+                                            size="small"
+                                            onPressEnter={handleReply}
+                                            value={comment}
+                                            onChange={value => setComment(value.target.value)}
+                                            allowClear
+                                            suffix={<Button
+                                                type="text"
+                                                icon={<TbSend className="text-info" size={20} onClick={handleReply} />}
+                                            />}
+                                        />
+                                    </div>
+                                </div>
                             </>
                         }
                     </>
                 }
             />
-            <DiscussList parentId={item._id} />
+            <div className="ms-4">
+                <DiscussList parentId={item._id} data={dataRely} />
+            </div>
         </List.Item>
     )
 }

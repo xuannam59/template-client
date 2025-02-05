@@ -1,9 +1,10 @@
-import { Form, Input, Modal, notification, Typography } from "antd";
-import { useEffect, useState } from "react";
+import { callCreateDiscuss } from "@/apis/api";
+import { useAppSelector } from "@/redux/hook";
+import { IDiscuss } from "@/types/backend";
+import { Button, Divider, Input, Modal, notification, Typography } from "antd";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import DiscussList from "./DiscussList";
-import { callCreateDiscuss, callGetDiscuss } from "@/apis/api";
-import { IDiscuss } from "@/types/backend";
 interface IProps {
   productId: string,
 }
@@ -14,33 +15,35 @@ const ProductDiscuss = (props: IProps) => {
   const { productId } = props
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dataDiscuss, setDataDiscuss] = useState<IDiscuss[]>([]);
-  const [isPageSize, setIsPageSize] = useState(true);
+  const [dataDiscuss, setDataDiscuss] = useState<IDiscuss>();
+  const [comment, setComment] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  // Thêm useRef để tham chiếu đến Input.TextArea
+  const inputRef = useRef<any>(null);
 
-  const [form] = Form.useForm();
+  const auth = useAppSelector(state => state.auth);
 
-  useEffect(() => {
-    getDiscuss()
-  }, []);
 
-  const getDiscuss = async () => {
+  const handleSubmit = async () => {
+    setIsLoading(true);
     try {
-      const res = await callGetDiscuss(
-        `parent_id=${productId}${isPageSize ? "&pageSize=5" : ''}`
-      );
+      const res = await callCreateDiscuss(comment, productId);
       if (res.data) {
-        setDataDiscuss(res.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleSubmit = async (value: any) => {
-    try {
-      const res = await callCreateDiscuss(value, productId);
-      if (res.data) {
-        form.resetFields();
+        setComment('');
+        const data: IDiscuss = {
+          _id: res.data,
+          comment: comment,
+          parent_id: productId,
+          created_by: {
+            _id: auth.user._id,
+            name: auth.user.name,
+            avatar: auth.user.avatar
+          },
+          isDeleted: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+        setDataDiscuss(data)
       } else {
         notification.error({
           message: "Trả lời thất bại",
@@ -49,25 +52,51 @@ const ProductDiscuss = (props: IProps) => {
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      setIsLoading(false);
     }
   }
-  console.log(12312);
+
+
+
   return (<>
     <div className="mx-3 container">
-      <DiscussList parentId={productId} />
+      <DiscussList parentId={productId} data={dataDiscuss} />
     </div>
-    <div>
-      <Form
-        layout="vertical"
-        form={form}
-        onFinish={handleSubmit}
-      >
-        <Form.Item>
-          <Input allowClear />
-        </Form.Item>
-      </Form>
+    <Divider className="mt-0" />
+    <Title level={4}>Bình luận: </Title>
 
+    <div className='row'>
+      <div className='col-sm-12 col-md-8 col-lg-6'>
+        <div className=''>
+          <Input.TextArea
+            disabled={isLoading}
+            value={comment}
+            ref={inputRef}
+            onFocus={() => {
+              if (!auth.isAuthenticated) {
+                setIsModalOpen(true);
+                inputRef.current?.blur();
+              }
+            }}
+            onChange={(val) => setComment(val.target.value)}
+            allowClear
+            rows={3}
+          />
+        </div>
+        <div className='mt-3 text-right'>
+          <Button
+            loading={isLoading}
+            disabled={!auth.isAuthenticated || !comment || isLoading}
+            type='primary'
+            size='large'
+            onClick={handleSubmit}>
+            Gửi
+          </Button>
+        </div>
+      </div>
     </div>
+
     <Modal
       width={350}
       open={isModalOpen}
