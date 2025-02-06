@@ -1,40 +1,30 @@
 import { useAppSelector } from "@/redux/hook";
 import { IDiscuss } from "@/types/backend";
-import { Avatar, Button, Divider, Dropdown, Input, List, MenuProps, notification, Space, Typography } from "antd"
+import { Avatar, Button, Dropdown, Input, List, message, notification, Space, Typography } from "antd"
 import dayjs from "dayjs";
-import { TbClock, TbDots, TbSend } from "react-icons/tb";
+import { TbClock, TbDots, TbSend, TbTrash } from "react-icons/tb";
 import Comment from "./Comment";
 import { useState } from "react";
 import DiscussList from "./DiscussList";
-import { callCreateDiscuss } from "@/apis/api";
+import { callCreateDiscuss, callDeleteDiscuss } from "@/apis/api";
 import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(relativeTime);
 
 
 interface IProps {
     item: IDiscuss,
+    setDataDiscuss: React.Dispatch<React.SetStateAction<IDiscuss[]>>
 }
 
 const { Text } = Typography;
 
 const DiscussItem = (props: IProps) => {
-    dayjs.extend(relativeTime);
-    const { item } = props;
+    const { item, setDataDiscuss } = props;
     const [isRely, setIsRely] = useState(false);
     const [comment, setComment] = useState("");
     const [dataRely, setDataRely] = useState<IDiscuss>();
 
     const user = useAppSelector(state => state.auth.user);
-
-    const items: MenuProps['items'] = [
-        {
-            label: "Chỉnh sửa",
-            key: '0',
-        },
-        {
-            label: "Xoá",
-            key: '1',
-        }
-    ];
 
     const handleReply = async () => {
 
@@ -42,7 +32,7 @@ const DiscussItem = (props: IProps) => {
             const res = await callCreateDiscuss(comment, item._id);
             if (res.data) {
                 const data: IDiscuss = {
-                    _id: res.data,
+                    _id: res.data._id,
                     comment: comment,
                     parent_id: item._id,
                     created_by: {
@@ -68,12 +58,28 @@ const DiscussItem = (props: IProps) => {
         }
     }
 
+    const handleDelete = async () => {
+        try {
+            const res = await callDeleteDiscuss(item._id);
+            if (res.data) {
+                setDataDiscuss(previous => {
+                    const result = previous.filter(discuss => discuss._id !== item._id);
+                    return result;
+                });
+                console.log(res.data);
+                message.success("Xoá thành bình luận thành công");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <List.Item
             key={item._id}
         >
             <List.Item.Meta
-                className="review-title"
+                className="review-title mb-0"
                 avatar={
                     <Avatar
                         size={40}
@@ -100,10 +106,24 @@ const DiscussItem = (props: IProps) => {
                                 onClick={() => setIsRely(!isRely)} >
                                 Trả lời
                             </Button>
-
-                            <Dropdown menu={{ items }} trigger={['click']}>
-                                <TbDots size={20} style={{ cursor: "pointer" }} />
-                            </Dropdown>
+                            {(item.created_by._id === user._id || user.role.name == "ADMIN") &&
+                                <Dropdown menu={{
+                                    items: [
+                                        {
+                                            label: <span
+                                                onClick={handleDelete}
+                                                className="text-danger">Xoá bình luận</span>,
+                                            icon: <TbTrash
+                                                size={18}
+                                                className="text-danger"
+                                            />,
+                                            key: '0',
+                                        }
+                                    ]
+                                }} trigger={['click']}>
+                                    <TbDots size={20} style={{ cursor: "pointer" }} />
+                                </Dropdown>
+                            }
                         </Space>
                         {
                             isRely &&

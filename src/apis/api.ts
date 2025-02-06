@@ -94,11 +94,15 @@ export const callChangeLike = (reviewId: string) => {
 }
 
 export const callCreateDiscuss = (comment: string, parent_id: string) => {
-    return axios.post<IBackendRes<string>>(`api/v1/discuss`, { comment, parent_id });
+    return axios.post<IBackendRes<{ _id: string }>>(`api/v1/discuss`, { comment, parent_id });
 }
 
 export const callGetDiscuss = (query: string = "") => {
     return axios.get<IBackendRes<IDiscuss[]>>(`api/v1/discuss?${query}`);
+}
+
+export const callDeleteDiscuss = (discussId: string) => {
+    return axios.delete<IBackendRes<string>>(`api/v1/discuss/${discussId}`);
 }
 
 export const callUploadSingleFile = (file: any) => {

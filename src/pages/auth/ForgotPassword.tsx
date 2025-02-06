@@ -12,6 +12,11 @@ const ForgotPassword = () => {
     const [email, setEmail] = useState<string>("");
     const [otpCode, setOtpCode] = useState<string>("");
 
+    const accessToken = window.localStorage.getItem("access_token");
+    if (accessToken) {
+        window.location.href = "/"
+    }
+
     const navigate = useNavigate();
     const steps = [
         {

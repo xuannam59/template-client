@@ -1,19 +1,19 @@
 import { callGetDiscuss } from "@/apis/api";
 import { IDiscuss } from "@/types/backend";
-import { Divider, List } from "antd";
+import { List } from "antd";
 import { useEffect, useState } from "react";
 import DiscussItem from "./DiscussItem";
 
 interface IProps {
     parentId: string;
     data?: IDiscuss;
+    limit?: number;
 }
 
 const DiscussList = (props: IProps) => {
-    const { parentId, data } = props
+    const { parentId, data, limit } = props
     const [isLoading, setIsLoading] = useState(false);
     const [dataDiscuss, setDataDiscuss] = useState<IDiscuss[]>([]);
-    const [isPageSize, setIsPageSize] = useState(true);
 
     useEffect(() => {
         if (data) {
@@ -21,13 +21,14 @@ const DiscussList = (props: IProps) => {
         } else {
             getDiscuss()
         }
-    }, [parentId, data]);
+    }, [parentId, data, limit]);
 
+    console.log(parentId);
     const getDiscuss = async () => {
         setIsLoading(true);
         try {
             const res = await callGetDiscuss(
-                `parent_id=${parentId}&pageSize=5`
+                `parent_id=${parentId}&pageSize=${limit ? limit : 5}`
             );
             if (res.data) {
                 setDataDiscuss(res.data);
@@ -40,14 +41,18 @@ const DiscussList = (props: IProps) => {
     }
 
     return (dataDiscuss.length > 0 ?
-        <List
-            itemLayout="vertical"
-            loading={isLoading}
-            dataSource={dataDiscuss}
-            renderItem={(item) =>
-                <DiscussItem item={item} />
-            }
-        />
+        <>
+            <List
+                itemLayout="vertical"
+                loading={isLoading}
+                dataSource={dataDiscuss}
+                renderItem={(item) =>
+                    <>
+                        <DiscussItem item={item} setDataDiscuss={setDataDiscuss} />
+                    </>
+                }
+            />
+        </>
         : null
     )
 }

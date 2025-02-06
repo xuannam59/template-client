@@ -57,7 +57,7 @@ const HomePage = () => {
       >  {
           imgSlider.map((item: string, index: number) => {
             return <>
-              <div key={index}>
+              <div key={item}>
                 <img
                   src={item}
                   alt=""

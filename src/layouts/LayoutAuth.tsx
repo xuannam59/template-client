@@ -1,6 +1,10 @@
 import { Outlet } from 'react-router'
 
 const LayoutAuth = () => {
+    const accessToken = window.localStorage.getItem("access_token");
+    if (accessToken) {
+        window.location.href = "/"
+    }
     return (
         <>
             <div className="container-fluid bg-body-tertiary" style={{ height: "100vh" }}>

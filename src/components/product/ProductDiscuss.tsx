@@ -18,6 +18,8 @@ const ProductDiscuss = (props: IProps) => {
   const [dataDiscuss, setDataDiscuss] = useState<IDiscuss>();
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [limit, setLimit] = useState(5);
+
   // Thêm useRef để tham chiếu đến Input.TextArea
   const inputRef = useRef<any>(null);
 
@@ -31,7 +33,7 @@ const ProductDiscuss = (props: IProps) => {
       if (res.data) {
         setComment('');
         const data: IDiscuss = {
-          _id: res.data,
+          _id: res.data._id,
           comment: comment,
           parent_id: productId,
           created_by: {
@@ -61,9 +63,20 @@ const ProductDiscuss = (props: IProps) => {
 
   return (<>
     <div className="mx-3 container">
-      <DiscussList parentId={productId} data={dataDiscuss} />
+      <DiscussList parentId={productId} data={dataDiscuss} limit={limit} />
+      <div className="mt-4">
+        <Button
+          onClick={() => {
+            setLimit(limit + 5)
+          }}
+          type="link"
+          size="small"
+        >
+          Hiển thị thêm
+        </Button>
+      </div>
     </div>
-    <Divider className="mt-0" />
+    <Divider className="" />
     <Title level={4}>Bình luận: </Title>
 
     <div className='row'>
