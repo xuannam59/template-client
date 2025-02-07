@@ -8,6 +8,7 @@ import { TbBell, TbChecklist, TbLogout, TbMenu2, TbSearch, TbShoppingCart, TbUse
 import { Link, useLocation, useNavigate } from 'react-router';
 import ButtonRemoveCartItem from '../cart/ButtonRemoveCartItem';
 import HeaderInputSearch from './HeaderInputSearch';
+import { tree } from '@/utils/createTree';
 
 type MenuItem = Required<MenuProps>['items'][number];
 const { Text, Title, Paragraph } = Typography
@@ -19,47 +20,42 @@ const HeaderPage = () => {
   const [isOpenSearch, setIsOpenSearch] = useState(false);
 
   const dispatch = useAppDispatch();
-
   let location = useLocation();
+
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
   const user = useAppSelector(state => state.auth.user);
   const cartUser = useAppSelector(state => state.cart);
-  const totalAmount = cartUser.productList.reduce((a, b) =>
-    a + b.quantity * b.productId.price * (1 - b.productId.discountPercentage / 100)
-    , 0);
+  const categories = useAppSelector(state => state.generalSettings.categories);
 
   useEffect(() => {
     if (location && location.pathname) {
-      const allRoute = ["", "products"];
-      const currentRoute = allRoute.find((item) => location.pathname.split("/")[1] === item);
+      const allRoute = categories.map(item => item.slug);
+      const currentRoute = allRoute.find((item) => location.pathname.split("/").at(-1) === item);
       if (currentRoute) {
         setActiveMenu(currentRoute);
       } else {
-        setActiveMenu("home");
+        setActiveMenu("");
       }
     }
   }, [location]);
 
-  const navigate = useNavigate()
+  const totalAmount = cartUser.productList.reduce((a, b) =>
+    a + b.quantity * b.productId.price * (1 - b.productId.discountPercentage / 100)
+    , 0);
 
-  const items: MenuItem[] = [
-    {
-      label: <Link to={"/"}>Home</Link>,
-      key: 'home',
-    },
-    {
-      label: <Link to={"/products"}>Products</Link>,
-      key: 'products',
-    },
-    {
-      label: <Link to={"/"}>Pages</Link>,
-      key: 'pages',
-    },
-    {
-      label: <Link to={"/"}>Contact</Link>,
-      key: 'contact',
-    }
-  ];
+  const navigate = useNavigate();
+
+  const handleConvertCategories = () => {
+    const newCategories = categories.map(item => ({
+      _id: item._id,
+      label: <Link to={`/products/list/${item.slug}`}>{item.title}</Link>,
+      key: item.slug,
+      parentId: item.parentId?._id ?? ""
+    }));
+    return tree(newCategories);
+  }
+
+  const items: MenuItem[] = handleConvertCategories();
 
   const itemsDropDown: MenuProps['items'] = [
     {
@@ -85,6 +81,7 @@ const HeaderPage = () => {
       }
     },
   ];
+
   return (
     <>
       <Header style={{
@@ -95,30 +92,29 @@ const HeaderPage = () => {
         width: '100%',
       }}>
         <div className="row">
-          <div className="col d-block d-lg-none">
+          <div className="col-2 d-block d-lg-none">
             <TbMenu2
               size={25}
               style={{ cursor: "pointer" }}
               onClick={() => setIsVisibleDrawer(true)}
             />
           </div> {/*Update*/}
-          <div className="col fs-3 text-sm-center text-lg-start d-none d-md-block">
+          <div className="col-md-4 col-lg-2 d-none d-md-block fs-3 text-sm-center text-lg-start">
             <Link to={"/"} style={{ color: "black" }}>
               <strong style={{ color: "#00a854" }}>J</strong>un<strong style={{ color: "#6252cd" }}>K</strong>un
             </Link>
           </div>
-          <div className="col d-none d-lg-block">
+          <div className="col-lg-7 d-none d-lg-block text-center">
             <Menu
-              defaultSelectedKeys={['']}
               mode='horizontal'
               items={items}
-              selectedKeys={[activeMenu]}
               theme="light"
+              selectedKeys={[activeMenu]}
+              className='justify-content-center'
               onClick={(e) => setActiveMenu(e.key)}
             />
           </div>
-
-          <div className="col text-end">
+          <div className="col-10 col-md-6 col-lg-3 text-end">
             <Space size={"middle"}>
               <TbSearch size={25} style={{ cursor: "pointer" }} onClick={() => setIsOpenSearch(true)} />
               <Dropdown

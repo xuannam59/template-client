@@ -3,9 +3,10 @@ import { useAppDispatch } from './redux/hook'
 import Router from './routers/Router'
 import "@/styles/App.css"
 import "@/styles/Responsive.css"
-import { callGetAccount, callGetUserCart } from './apis/api';
+import { callGetAccount, callGetCategories, callGetUserCart } from './apis/api';
 import { doGetAccountAction } from './redux/reducers/auth.reducer';
 import { doGetCart } from './redux/reducers/cart.reducer';
+import { doGetCategories } from './redux/reducers/generalSettings.reducer';
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
   useEffect(() => {
     if (!hasFetch.current) {
       getAccount()
+      getCategories()
       hasFetch.current = true;
     }
   }, []);
@@ -31,6 +33,17 @@ function App() {
     const resCart = await callGetUserCart(res.data?._id);
     if (resCart.data) {
       dispatch(doGetCart(resCart.data));
+    }
+  }
+
+  const getCategories = async () => {
+    try {
+      const res = await callGetCategories();
+      if (res.data) {
+        dispatch(doGetCategories(res.data.result));
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 

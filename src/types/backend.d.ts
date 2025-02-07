@@ -86,7 +86,7 @@ export interface IGetAccount {
 export interface ICategories {
     _id: string
     title: string
-    parentId: {
+    parentId?: {
         _id: string
         title: string
     }
@@ -95,6 +95,7 @@ export interface ICategories {
     slug: string
     displayMode: boolean
 
+    children?: ICategories[]
     isDeleted?: boolean
     createdAt?: string
     updatedAt?: string

@@ -15,7 +15,7 @@ const ProductItem = (props: IProps) => {
     return (
         <div
             key={item._id}
-            className="col-7 col-md-4 col-lg-3 pt-md-3 pb-md-3"
+            className="col-12 col-md-6 col-lg-3 py-3 py-lg-0"
         >
             <div className="product-item">
                 <div>

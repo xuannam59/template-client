@@ -9,37 +9,33 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import SliderIcon from "@/components/slider/SliderIcon";
 import ProductItem from "@/components/product/ProductItem";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { doGetCategories } from "@/redux/reducers/generalSettings.reducer";
 // import { TbDeviceLaptop } from "react-icons/tb";
 
 
 const HomePage = () => {
-  const [categories, setCategories] = useState<ICategories[]>([]);
+  const [slideCategory, setSlideCategory] = useState<ICategories[]>([]);
   const [bestSellers, setBestSellers] = useState<IProducts[]>([]);
+
+  const categories = useAppSelector(state => state.generalSettings.categories);
+
   useEffect(() => {
-    getData()
+    getBestSeller()
   }, []);
 
-  const getData = () => {
-    getBestSeller();
-    getCategories();
-  }
+  useEffect(() => {
+    if (categories) {
+      const displayMode = categories.filter(item => item.displayMode);
+      setSlideCategory(displayMode);
+    }
+  }, [categories])
 
   const getBestSeller = async () => {
     try {
       const res = await callGetProducts("sort=-sales&pageSize=4");
       if (res.data) {
         setBestSellers(res.data.result);
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const getCategories = async () => {
-    try {
-      const res = await callGetCategories("displayMode=true");
-      if (res.data) {
-        setCategories(res.data.result);
       }
     } catch (error) {
       console.log(error)
@@ -88,14 +84,14 @@ const HomePage = () => {
       </div>
       <div className="container">
         <Section>
-          <SliderIcon data={categories} />
+          <SliderIcon data={slideCategory} />
         </Section>
         <Section>
           <Tabbar
             title="Our BestSeller"
             level={2}
           />
-          <div className="row">
+          <div className="row justify-content-center">
             {bestSellers.map(item => <ProductItem key={item._id} item={item} />)}
           </div>
         </Section>
