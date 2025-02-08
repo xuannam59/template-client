@@ -23,7 +23,6 @@ const DiscussList = (props: IProps) => {
         }
     }, [parentId, data, limit]);
 
-    console.log(parentId);
     const getDiscuss = async () => {
         setIsLoading(true);
         try {

@@ -137,7 +137,7 @@ const HeaderPage = () => {
                               <List.Item.Meta
                                 avatar={
                                   <Avatar
-                                    src={item.productId.images[0]}
+                                    src={item.productId.thumbnail}
                                     size={52}
                                     shape='square'
                                   />}
@@ -217,12 +217,20 @@ const HeaderPage = () => {
         onClose={() => { setIsOpenSearch(false) }}
       />
       <Drawer
+        title="Danh mục"
         open={isVisibleDrawer}
         onClose={() => setIsVisibleDrawer(false)}
         placement="left"
         closable={false}
       >
-        Hello
+        <Menu
+          mode="inline"
+          style={{ border: "none" }}
+          items={items}
+          theme="light"
+          selectedKeys={[activeMenu]}
+          onClick={(e) => setActiveMenu(e.key)}
+        />
       </Drawer>
     </>
   )

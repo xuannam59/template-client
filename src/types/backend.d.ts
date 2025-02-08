@@ -112,6 +112,7 @@ export interface IProducts {
     price: number
     discountPercentage: number
     images: string[]
+    thumbnail: string
     status: string
     versions: {
         color: string

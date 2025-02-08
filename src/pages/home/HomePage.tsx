@@ -1,17 +1,15 @@
-import { Carousel } from "antd"
-import { imgSlider } from "./dataInfo";
-import { useEffect, useState } from "react";
-import { callGetCategories, callGetProducts } from "@/apis/api";
-import { ICategories, IProducts } from "@/types/backend";
-import Tabbar from "@/components/home/Tabbar";
+import { callGetProducts } from "@/apis/api";
 import Section from "@/components/home/Section";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import SliderIcon from "@/components/slider/SliderIcon";
+import Tabbar from "@/components/home/Tabbar";
 import ProductItem from "@/components/product/ProductItem";
-import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { doGetCategories } from "@/redux/reducers/generalSettings.reducer";
-// import { TbDeviceLaptop } from "react-icons/tb";
+import SliderIcon from "@/components/slider/SliderIcon";
+import { useAppSelector } from "@/redux/hook";
+import { ICategories, IProducts } from "@/types/backend";
+import { Carousel } from "antd";
+import { useEffect, useState } from "react";
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
+import { imgSlider } from "./dataInfo";
 
 
 const HomePage = () => {
@@ -51,22 +49,19 @@ const HomePage = () => {
         }}
         autoplay
       >  {
-          imgSlider.map((item: string, index: number) => {
-            return <>
-              <div key={item}>
-                <img
-                  src={item}
-                  alt=""
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    objectFit: "cover",
-                    maxHeight: "500px"
-                  }}
-                />
-              </div>
-            </>
-          })
+          imgSlider.map((item: string) => <div key={item}>
+            <img
+              src={item}
+              alt=""
+              style={{
+                width: "100%",
+                height: "auto",
+                objectFit: "cover",
+                maxHeight: "500px"
+              }}
+            />
+          </div>
+          )
         }
       </Carousel>
       <div

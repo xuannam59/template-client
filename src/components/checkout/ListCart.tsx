@@ -31,9 +31,10 @@ const ListCart = () => {
             key: "product",
             width: 350,
             render: (item: cartSate["productList"][number]) => {
+                console.log(item)
                 return <>
                     <Space>
-                        <Avatar className="d-none d-lg-block" src={item.productId.images[0]} size={52} shape="square" />
+                        <Avatar className="d-none d-lg-block" src={item.productId.thumbnail} size={52} shape="square" />
                         <Paragraph
                             ellipsis={{ rows: 2, tooltip: item.productId.title }}
                             style={{ fontSize: 13, fontWeight: 600, marginBottom: "auto" }}>

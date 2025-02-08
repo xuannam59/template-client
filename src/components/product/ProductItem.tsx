@@ -23,7 +23,7 @@ const ProductItem = (props: IProps) => {
                         <Link to={`/products/detail/${item.slug}`} >
                             <img
                                 className="product-image-content"
-                                src={item.images[0]}
+                                src={item.thumbnail}
                                 alt={item.title}
                             />
                         </Link>
