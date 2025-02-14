@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch } from './redux/hook'
 import Router from './routers/Router'
 import "@/styles/App.css"
@@ -7,17 +7,20 @@ import { callGetAccount, callGetCategories, callGetUserCart } from './apis/api';
 import { doGetAccountAction } from './redux/reducers/auth.reducer';
 import { doGetCart } from './redux/reducers/cart.reducer';
 import { doGetCategories } from './redux/reducers/generalSettings.reducer';
+import { Spin } from 'antd';
 
 function App() {
-
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const hasFetch = useRef(false);
 
   useEffect(() => {
     if (!hasFetch.current) {
+      setIsLoading(true);
       getAccount()
       getCategories()
       hasFetch.current = true;
+      setIsLoading(false);
     }
   }, []);
 
@@ -47,7 +50,7 @@ function App() {
     }
   }
 
-  return (
+  return (isLoading ? <Spin /> :
     <>
       <Router />
     </>

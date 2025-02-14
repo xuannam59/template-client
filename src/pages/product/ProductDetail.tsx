@@ -124,7 +124,7 @@ const ProductDetail = () => {
                         ]} />
 
                         <div className="row mt-3">
-                            <div className="col-12 col-md-6">
+                            <div className="col-12 col-md-5">
                                 <ImageGallery
                                     showPlayButton={false}
                                     showFullscreenButton={false}
@@ -310,7 +310,7 @@ const ProductDetail = () => {
                                     title="Sản phẩm liên quan"
                                     textAlign="start"
                                 />
-                                <div className="row justify-content-center">
+                                <div className="row">
                                     {relatedProducts.map(item => <ProductItem key={item._id} item={item} />)}
                                 </div>
                             </div>

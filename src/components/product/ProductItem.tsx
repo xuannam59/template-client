@@ -15,7 +15,7 @@ const ProductItem = (props: IProps) => {
     return (
         <div
             key={item._id}
-            className="col-12 col-md-6 col-lg-3 py-3 py-lg-0"
+            className={`col-12 col-md-6 col-lg-3 py-3 py-lg-0 my-2`}
         >
             <div className="product-item">
                 <div>
@@ -42,10 +42,10 @@ const ProductItem = (props: IProps) => {
                 <div className="row g-2 flex-column">
                     <div className="col">
                         <div className="row">
-                            <div className="col-12 col-md-6">
+                            <div className="col-12 col-md-6 col-lg-8">
                                 <Rate allowHalf disabled value={item.reviews.score} style={{ fontSize: 16 }} />
                             </div>
-                            <div className="col-12 col-md-6 text-md-end">
+                            <div className="col-12 col-md-6 col-lg-4 text-md-end">
                                 <Paragraph className="m-0">Đã bán {sales}</Paragraph>
                             </div>
                         </div>

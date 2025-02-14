@@ -20,16 +20,16 @@ const HeaderPage = () => {
   const [isOpenSearch, setIsOpenSearch] = useState(false);
 
   const dispatch = useAppDispatch();
-  let location = useLocation();
 
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
   const user = useAppSelector(state => state.auth.user);
   const cartUser = useAppSelector(state => state.cart);
   const categories = useAppSelector(state => state.generalSettings.categories);
 
+  let location = useLocation();
+  const allRoute = categories.map(item => item.slug);
   useEffect(() => {
     if (location && location.pathname) {
-      const allRoute = categories.map(item => item.slug);
       const currentRoute = allRoute.find((item) => location.pathname.split("/").at(-1) === item);
       if (currentRoute) {
         setActiveMenu(currentRoute);
@@ -37,8 +37,7 @@ const HeaderPage = () => {
         setActiveMenu("");
       }
     }
-  }, [location]);
-
+  }, [location, allRoute]);
   const totalAmount = cartUser.productList.reduce((a, b) =>
     a + b.quantity * b.productId.price * (1 - b.productId.discountPercentage / 100)
     , 0);
@@ -50,7 +49,7 @@ const HeaderPage = () => {
       _id: item._id,
       label: <Link to={`/products/list/${item.slug}`}>{item.title}</Link>,
       key: item.slug,
-      parentId: item.parentId?._id ?? ""
+      parentId: item.parentId ?? ""
     }));
     return tree(newCategories);
   }
@@ -90,7 +89,9 @@ const HeaderPage = () => {
         top: 0,
         zIndex: 1,
         width: '100%',
-      }}>
+        boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px"
+      }}
+      >
         <div className="row">
           <div className="col-2 d-block d-lg-none">
             <TbMenu2

@@ -86,10 +86,7 @@ export interface IGetAccount {
 export interface ICategories {
     _id: string
     title: string
-    parentId?: {
-        _id: string
-        title: string
-    }
+    parentId?: string
     status: string
     image: string
     slug: string
