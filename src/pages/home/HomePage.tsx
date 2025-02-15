@@ -3,13 +3,13 @@ import Section from "@/components/home/Section";
 import Tabbar from "@/components/home/Tabbar";
 import ProductItem from "@/components/product/ProductItem";
 import SliderIcon from "@/components/slider/SliderIcon";
+import { imgSlider } from "@/constants/appInfos";
 import { useAppSelector } from "@/redux/hook";
 import { ICategories, IProducts } from "@/types/backend";
 import { Carousel } from "antd";
 import { useEffect, useState } from "react";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import { imgSlider } from "./dataInfo";
 
 
 const HomePage = () => {

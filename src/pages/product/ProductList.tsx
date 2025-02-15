@@ -1,15 +1,21 @@
 import { callGetProducts } from '@/apis/api';
 import ProductItem from '@/components/product/ProductItem';
 import { IProducts } from '@/types/backend';
-import { Breadcrumb, Button, Drawer, Dropdown, Layout, MenuProps, Pagination, PaginationProps, Skeleton, Space, Typography } from 'antd';
+import { Breadcrumb, Button, Dropdown, Layout, MenuProps, Pagination, PaginationProps, Skeleton, Space, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { PiChartLineDown, PiChartLineUp } from 'react-icons/pi';
-import { TbFilter } from 'react-icons/tb';
+import { TbChevronDown, TbFilter } from 'react-icons/tb';
 import { Link, useParams } from 'react-router';
 import ProductFilter from './ProductFilter';
 
-const { Content } = Layout
+export interface IFilter {
+    chip: string[],
+    ram: string[],
+    ssd: string[],
+    price: number[]
+}
 
+const { Content } = Layout
 const { Text } = Typography;
 const ProductList = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -17,24 +23,29 @@ const ProductList = () => {
     const [current, setCurrent] = useState(1);
     const [pageSize] = useState(15);
     const [totalItems, setTotalItems] = useState(0);
-    const [sort, setSort] = useState("");
-    const [maxPrice, setMaxPrice] = useState(1);
+    const [sort, setSort] = useState("-createdAt");
+    const [filter, setFilter] = useState<IFilter>({
+        chip: [],
+        ram: [],
+        ssd: [],
+        price: []
+    });
     const [openDrawer, setOpenDrawer] = useState(false);
     const { slug } = useParams();
 
     useEffect(() => {
         fetchProductByFilter();
-    }, [slug, current, sort]);
-    useEffect(() => {
-        if (products.length > 0) {
-            const price = products.map(item => item.price);
-            setMaxPrice(Math.max(...price));
-        }
-    }, [products]);
+    }, [slug, current, sort, filter]);
+
     const fetchProductByFilter = async () => {
         setIsLoading(true)
         try {
-            const query = `${sort && `&sort=${sort}`}`
+            let query = `&sort=${sort}`
+            Object.entries(filter).forEach(([key, value]) => {
+                if (value.length > 0) {
+                    query += `&${key}=${value.join(',')}`
+                }
+            })
             const res = await callGetProducts(`current=${current}&pageSize=${pageSize}&categorySlug=${slug}${query}`);
             if (res.data) {
                 setProducts(res.data.result);
@@ -46,7 +57,6 @@ const ProductList = () => {
             setIsLoading(false)
         }
     }
-
     const items: MenuProps['items'] = [
         {
             key: 'priceDescend',
@@ -63,17 +73,8 @@ const ProductList = () => {
             onClick: () => {
                 setSort("price");
             }
-        },
-        {
-            key: 'new',
-            label: "Mới nhất",
-            icon: "",
-            onClick: () => {
-                setSort("-createdAt");
-            }
-        },
+        }
     ];
-
     const onChangePagination: PaginationProps['onChange'] = (currentPage: number) => {
         if (currentPage !== current) {
             setCurrent(currentPage);
@@ -95,9 +96,6 @@ const ProductList = () => {
                             }
                         ]} />
                     </div>
-                    <div className="col text-end d-block d-md-none">
-                        <Button type='text' icon={<TbFilter size={20} />} />
-                    </div>
                 </div>
                 <Layout className='mt-3'>
                     <Content className='mb-3' >
@@ -112,9 +110,21 @@ const ProductList = () => {
                             <div className="col text-end">
                                 <Space>
                                     <Dropdown menu={{ items }}>
-                                        <Button onClick={() => setSort("")}>Sắp xếp theo</Button>
+                                        <Button
+                                            onClick={() => setSort("")}
+                                            icon={<TbChevronDown size={16} />}
+                                            iconPosition='end'
+                                        >
+                                            Sắp xếp theo
+
+                                        </Button>
                                     </Dropdown>
-                                    <Button onClick={() => setOpenDrawer(true)}>Bộ lọc</Button>
+                                    <Button
+                                        onClick={() => setOpenDrawer(true)}
+                                        icon={<TbFilter size={20} />}
+                                    >
+                                        Bộ lọc
+                                    </Button>
                                 </Space>
                             </div>
                         </div>
@@ -152,8 +162,8 @@ const ProductList = () => {
             </div>
         </div>
         <ProductFilter
+            onFilter={(value) => setFilter(value)}
             open={openDrawer}
-            maxPrice={maxPrice}
             onClose={() => {
                 setOpenDrawer(false)
             }}
