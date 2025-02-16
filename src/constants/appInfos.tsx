@@ -4,10 +4,22 @@ export const imgSlider = [
     "https://shopdunk.com/images/uploaded/banner/banner%202024/Thang_12/banner%20mini%20m4-T12a_PC.png"
 ]
 
-export const computerConfiguration = {
-    chip: ["Intel Core i3", "Intel Core i5", "Intel Core i7", "Intel Core i9", "Apple M1", "Apple M1 Pr0",
-        "Apple M1 Max", "Apple M1 Ultra", "Apple M2", "Apple M2 Pro", "Apple M2 Max", "Apple M2 Ultra", "Apple M3",
-        "Apple M3 Pro", "Apple M3 Max", "Apple M4", "Apple M4 Pro", "Apple M4 Max",],
-    ram: ["4 GB", "8 GB", "16 GB", "18 GB", "24 GB", "32 GB", "36 GB", "48 GB", "64 GB", "96 GB", "128 GB", "192 GB"],
-    ssd: ["128 GB", "256 GB", "512 GB", "1 TB", "2 TB", "4 TB", "8 TB",]
-}
+export const computerConfiguration = [
+    {
+        key: "chip",
+        title: "CPU",
+        value: ["Intel Core i3", "Intel Core i5", "Intel Core i7", "Intel Core i9", "Apple M1", "Apple M1 Pr0",
+            "Apple M1 Max", "Apple M1 Ultra", "Apple M2", "Apple M2 Pro", "Apple M2 Max", "Apple M2 Ultra", "Apple M3",
+            "Apple M3 Pro", "Apple M3 Max", "Apple M4", "Apple M4 Pro", "Apple M4 Max",]
+    },
+    {
+        key: "ram",
+        title: "Dung lượng RAM",
+        value: ["4GB", "8GB", "16GB", "18GB", "24GB", "32GB", "36GB", "48GB", "64GB", "96GB", "128GB", "192GB"]
+    },
+    {
+        key: "ssd",
+        title: "Dung lượng ổ cứng",
+        value: ["128GB", "256GB", "512GB", "1TB", "2TB", "4TB", "8TB",]
+    }
+]

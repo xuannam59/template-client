@@ -18,6 +18,7 @@ export interface IFilter {
 const { Content } = Layout
 const { Text } = Typography;
 const ProductList = () => {
+    const { slug } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [products, setProducts] = useState<IProducts[]>([]);
     const [current, setCurrent] = useState(1);
@@ -31,11 +32,20 @@ const ProductList = () => {
         price: []
     });
     const [openDrawer, setOpenDrawer] = useState(false);
-    const { slug } = useParams();
 
     useEffect(() => {
         fetchProductByFilter();
     }, [slug, current, sort, filter]);
+
+    useEffect(() => {
+        setFilter({
+            chip: [],
+            ram: [],
+            ssd: [],
+            price: []
+        });
+        setCurrent(1);
+    }, [slug]);
 
     const fetchProductByFilter = async () => {
         setIsLoading(true)
@@ -80,6 +90,7 @@ const ProductList = () => {
             setCurrent(currentPage);
         }
     }
+
     return (<>
         <div className="container-fluid">
             <div className="container mt-4">
