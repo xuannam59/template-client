@@ -25,6 +25,10 @@ export const callGetAccount = () => {
     return axios.get<IBackendRes<IGetAccount>>("api/v1/auth/account");
 }
 
+export const callUpdateUser = (data: any) => {
+    return axios.patch<IBackendRes<string>>(`api/v1/users/${data._id}`, data);
+}
+
 export const callLogOut = () => {
     return axios.post<IBackendRes<string>>("api/v1/auth/logout");
 }
@@ -105,7 +109,7 @@ export const callDeleteDiscuss = (discussId: string) => {
     return axios.delete<IBackendRes<string>>(`api/v1/discuss/${discussId}`);
 }
 
-export const callUploadSingleFile = (file: any) => {
+export const callUploadSingleFile = (file: any, folderName: string) => {
     const bodyFormData = new FormData();
     bodyFormData.append("file", file);
     return axios<IBackendRes<{ fileUpload: string }>>({
@@ -113,7 +117,8 @@ export const callUploadSingleFile = (file: any) => {
         url: 'api/v1/file/upload',
         data: bodyFormData,
         headers: {
-            "Content-Type": "multipart/form-data"
+            "Content-Type": "multipart/form-data",
+            "folder-name": folderName
         }
     });
 }

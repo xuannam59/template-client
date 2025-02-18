@@ -5,13 +5,17 @@ export interface authSate {
   isLoading: boolean
   user: {
     _id: string;
+    avatar: string;
     email: string;
     name: string;
+    phone: string;
+    age: string;
+    gender: string;
+    address: string;
     role: {
       _id: string,
       name: string
     };
-    avatar: string;
     permissions: {
       _id: string,
       name: string,
@@ -29,6 +33,10 @@ const initialState: authSate = {
     _id: "",
     email: "",
     name: "",
+    phone: "",
+    gender: "",
+    age: "",
+    address: "",
     role: {
       _id: "",
       name: ""
@@ -49,6 +57,10 @@ const authSlide = createSlice({
       state.user._id = action?.payload?._id;
       state.user.email = action.payload.email;
       state.user.name = action.payload.name;
+      state.user.phone = action.payload.phone;
+      state.user.age = action.payload.age;
+      state.user.gender = action.payload.gender;
+      state.user.address = action.payload.address;
       state.user.role = action?.payload?.role;
       state.user.avatar = action?.payload?.avatar;
       state.user.permissions = action?.payload?.permissions;
@@ -58,6 +70,10 @@ const authSlide = createSlice({
       state.isLoading = false;
       state.user._id = action?.payload?._id;
       state.user.email = action.payload.email;
+      state.user.phone = action.payload.phone;
+      state.user.age = action.payload.age;
+      state.user.gender = action.payload.gender;
+      state.user.address = action.payload.address;
       state.user.name = action.payload.name;
       state.user.role = action?.payload?.role;
       state.user.avatar = action?.payload?.avatar;
@@ -70,6 +86,10 @@ const authSlide = createSlice({
         _id: "",
         email: "",
         name: "",
+        phone: "",
+        gender: "",
+        age: "",
+        address: "",
         role: {
           _id: "",
           name: ""

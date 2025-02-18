@@ -120,16 +120,17 @@ const ProductList = () => {
                             </div>
                             <div className="col text-end">
                                 <Space>
-                                    <Dropdown menu={{ items }}>
-                                        <Button
-                                            onClick={() => setSort("")}
-                                            icon={<TbChevronDown size={16} />}
-                                            iconPosition='end'
-                                        >
-                                            Sắp xếp theo
-
-                                        </Button>
-                                    </Dropdown>
+                                    <div className="d-none d-md-block">
+                                        <Dropdown menu={{ items }}>
+                                            <Button
+                                                onClick={() => setSort("")}
+                                                icon={<TbChevronDown size={16} />}
+                                                iconPosition='end'
+                                            >
+                                                Sắp xếp theo
+                                            </Button>
+                                        </Dropdown>
+                                    </div>
                                     <Button
                                         onClick={() => setOpenDrawer(true)}
                                         icon={<TbFilter size={20} />}

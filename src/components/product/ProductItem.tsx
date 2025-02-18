@@ -20,7 +20,7 @@ const ProductItem = (props: IProps) => {
             <div className="product-item">
                 <div>
                     <div className="product-image">
-                        <Link to={`/products/detail/${item.slug}`} >
+                        <Link to={`/products/detail/${item.slug}`} className="d-block text-center">
                             <img
                                 className="product-image-content"
                                 src={item.thumbnail}

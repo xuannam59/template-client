@@ -8,6 +8,7 @@ import HomePage from '@/pages/home/HomePage'
 import ProductDetail from '@/pages/product/ProductDetail'
 import ProductList from '@/pages/product/ProductList'
 import ProductPage from '@/pages/product/ProductPage'
+import ProfilePage from '@/pages/profile/ProfilePage'
 import { BrowserRouter, Route, Routes } from 'react-router'
 
 const Router = () => {
@@ -22,6 +23,7 @@ const Router = () => {
                         <Route path='list/:slug' element={<ProductList />} />
                         <Route path='checkout' element={<Checkout />} />
                     </Route>
+                    <Route path='user' element={<ProfilePage />} />
                 </Route>
                 <Route element={<LayoutAuth />}>
                     <Route path='login' element={<Login />} />

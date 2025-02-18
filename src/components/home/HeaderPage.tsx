@@ -20,11 +20,12 @@ const HeaderPage = () => {
   const [isOpenSearch, setIsOpenSearch] = useState(false);
 
   const dispatch = useAppDispatch();
-
-  const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
-  const user = useAppSelector(state => state.auth.user);
+  const auth = useAppSelector(state => state.auth);
   const cartUser = useAppSelector(state => state.cart);
   const categories = useAppSelector(state => state.generalSettings.categories);
+
+  const isAuthenticated = auth.isAuthenticated;
+  const user = auth.user;
 
   let location = useLocation();
   const allRoute = categories.map(item => item.slug);
@@ -58,7 +59,7 @@ const HeaderPage = () => {
 
   const itemsDropDown: MenuProps['items'] = [
     {
-      label: <Link to={"/user/account"}>Tài khoản</Link>,
+      label: <Link to={"/user"}>Tài khoản</Link>,
       key: 'myAccount',
       icon: <TbUser size={20} />
     },
@@ -70,6 +71,7 @@ const HeaderPage = () => {
     {
       label: 'Đăng xuất',
       key: 'Logout',
+      danger: true,
       icon: <TbLogout size={20} />,
       onClick: async () => {
         const res = await callLogOut();
