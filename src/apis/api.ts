@@ -54,15 +54,15 @@ export const callGetUserCart = (userId: string | undefined) => {
 }
 
 export const callAddProductToCart = (productId: string, quantity: number, color: string) => {
-    return axios.patch<IBackendRes<ICart>>(`api/v1/carts/add-product`, { productId, quantity, color });
+    return axios.patch<IBackendRes<string>>(`api/v1/carts/add-product`, { productId, quantity, color });
 }
 
-export const callRemoveProductToCart = (id: string) => {
-    return axios.patch<IBackendRes<ICart>>(`api/v1/carts/remove-product`, { id });
+export const callRemoveProductToCart = (id: string, color: string) => {
+    return axios.patch<IBackendRes<string>>(`api/v1/carts/remove-product`, { id, color });
 }
 
 export const callChangeProductType = (_id: string, value: number | string, type: string) => {
-    return axios.patch<IBackendRes<ICart>>(`api/v1/carts/change-product-type`, { _id, value, type });
+    return axios.patch<IBackendRes<string>>(`api/v1/carts/change-product-type`, { _id, value, type });
 }
 
 export const callCheckDiscountCode = (code: string, totalAmount: number) => {
@@ -107,6 +107,10 @@ export const callGetDiscuss = (query: string = "") => {
 
 export const callDeleteDiscuss = (discussId: string) => {
     return axios.delete<IBackendRes<string>>(`api/v1/discuss/${discussId}`);
+}
+
+export const callCreateOrder = (data: unknown) => {
+    return axios.post<IBackendRes<{ _id: string }>>(`api/v1/orders`, data);
 }
 
 export const callUploadSingleFile = (file: any, folderName: string) => {

@@ -1,21 +1,23 @@
 import { callRemoveProductToCart } from '@/apis/api';
 import { useAppDispatch } from '@/redux/hook';
-import { doGetCart } from '@/redux/reducers/cart.reducer';
+import { doGetCart, doRemoveProduct } from '@/redux/reducers/cart.reducer';
 import { Button, message, Modal, notification } from 'antd';
 import { TbTrash } from 'react-icons/tb';
 
 interface IProps {
     id: string,
+    color: string
 }
 
 const ButtonRemoveCartItem = (props: IProps) => {
-    const { id } = props
+    const { id, color } = props
     const dispatch = useAppDispatch()
-    const handleRemoveCartItem = async (id: string) => {
+    const handleRemoveCartItem = async () => {
         try {
-            const res = await callRemoveProductToCart(id);
+            const data = { productId: id, color }
+            const res = await callRemoveProductToCart(data.productId, data.color);
             if (res.data) {
-                dispatch(doGetCart(res.data));
+                dispatch(doRemoveProduct(data));
                 message.success("xoá thành công sản phẩm khỏi giỏ hàng");
             } else {
                 notification.error({
@@ -30,13 +32,13 @@ const ButtonRemoveCartItem = (props: IProps) => {
 
     return (
         <Button
-            icon={<TbTrash size={22} />}
+            icon={<TbTrash size={20} />}
             danger type="text"
             onClick={() => Modal.confirm({
                 title: "Xác nhận",
                 content: "Bạn chắc chắn muốn xoá sản phẩm này",
                 onOk: async () => {
-                    await handleRemoveCartItem(id);
+                    await handleRemoveCartItem();
                 }
             })}
         />

@@ -4,8 +4,9 @@ import { doGetCart } from "@/redux/reducers/cart.reducer";
 import { IUserAddress } from "@/types/backend";
 import { Button, Card, List, message, Modal, notification, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { TbCheck, TbChevronLeft, TbEdit, TbTrash } from "react-icons/tb";
+import { TbArrowRight, TbCheck, TbEdit, TbPlus, TbTrash } from "react-icons/tb";
 import AddOrEditAddress from "../address/AddOrEditAddress";
+import Section from "../home/Section";
 
 interface IProps {
     onSelectAddress: (val: IUserAddress | undefined) => void
@@ -14,6 +15,7 @@ interface IProps {
 const { Title, Paragraph } = Typography;
 const ShippingAddress = (props: IProps) => {
     const { onSelectAddress } = props
+    const [isOpenModal, setIsOpenModal] = useState(false);
     const [addressSelected, setAddressSelected] = useState<IUserAddress>();
     const [isEditAddress, setIsEditAddress] = useState<IUserAddress>();
     const dispatch = useAppDispatch();
@@ -45,9 +47,23 @@ const ShippingAddress = (props: IProps) => {
     }
     return (
         <>
-            <Card className="mt-3">
-                {/* <Button type="text" icon={<TbChevronLeft size={22} />}>Trở lại</Button> */}
-                <Title level={4} className="">Lựa chọn một địa điểm giao hàng</Title>
+            <Section>
+                <div className="row">
+                    <div className="col">
+                        <Title level={4} className="">Lựa chọn một địa điểm giao hàng</Title>
+                    </div>
+                    <div className="col text-end">
+                        {userAddress.length < 2 &&
+                            <Button
+                                type="primary"
+                                icon={<TbPlus size={16} />}
+                                onClick={() => setIsOpenModal(true)}
+                            >
+                                Thêm Mới
+                            </Button>
+                        }
+                    </div>
+                </div>
                 <Paragraph type="secondary">
                     Địa chỉ bạn muốn sử dụng có hiển thị bên dưới không? Nếu có, hãy chọn địa chỉ tương ứng.
                     Hoặc bạn có thể tạo một địa chỉ giao hàng mới. (tối đa 2 địa chỉ)
@@ -88,7 +104,10 @@ const ShippingAddress = (props: IProps) => {
                                                     variant="text"
                                                     style={{ width: "100%" }}
                                                     icon={<TbEdit size={22} />}
-                                                    onClick={() => setIsEditAddress(item)}
+                                                    onClick={() => {
+                                                        setIsEditAddress(item)
+                                                        setIsOpenModal(true);
+                                                    }}
                                                 >Chỉnh sửa</Button>
                                             </div>
                                             <div className="col">
@@ -119,19 +138,20 @@ const ShippingAddress = (props: IProps) => {
                         disabled={userAddress.length === 0}
                         onClick={() => onSelectAddress(addressSelected)}
                         type="primary"
+                        icon={<TbArrowRight size={16} />}
+                        iconPosition="end"
                     >Tiếp tục
                     </Button >
                 </div>
-            </Card>
-
-            <div className="mt-3">
-                <AddOrEditAddress
-                    isEditAddress={isEditAddress}
-                    onCancel={() => {
-                        setIsEditAddress(undefined);
-                    }}
-                />
-            </div>
+            </Section>
+            <AddOrEditAddress
+                isOpenModal={isOpenModal}
+                isEditAddress={isEditAddress}
+                onCancel={() => {
+                    setIsEditAddress(undefined);
+                    setIsOpenModal(false)
+                }}
+            />
         </>
     )
 }

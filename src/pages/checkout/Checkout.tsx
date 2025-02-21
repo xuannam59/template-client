@@ -1,13 +1,23 @@
-import { callCheckDiscountCode } from "@/apis/api";
+import { callCheckDiscountCode, callCreateOrder } from "@/apis/api";
 import ListCart from "@/components/checkout/ListCart";
 import PaymentMethod from "@/components/checkout/PaymentMethod"
 import Reviews from "@/components/checkout/Reviews";
 import ShippingAddress from "@/components/checkout/ShippingAddress";
-import { useAppSelector } from "@/redux/hook";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { doOrderProduct } from "@/redux/reducers/cart.reducer";
 import { VND } from "@/utils/handleCurrency";
-import { Button, Card, Divider, Input, message, notification, Space, Steps, Typography } from "antd";
+import { Button, Card, Divider, Input, message, Modal, notification, Space, Steps, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { TbCreditCard, TbFileDescription, TbMapPin } from "react-icons/tb";
+import { TbArrowLeft, TbArrowRight, TbCreditCard, TbFileDescription, TbMapPin } from "react-icons/tb";
+
+export interface IPaymentDetail {
+    shippingAddress: {
+        receiver: string;
+        phoneNumber: string;
+        address: string;
+    };
+    paymentMethod: string;
+}
 
 const { Title, Text } = Typography
 const Checkout = () => {
@@ -15,14 +25,18 @@ const Checkout = () => {
     const [discountCode, setDiscountCode] = useState("");
     const [discountValue, setDiscountValue] = useState({ type: "", value: 0, maxValue: 0 });
     const [grandTotal, setGrandTotal] = useState(0);
-    const [currentStep, setCurrentStep] = useState<number>();
-    const [paymentDetail, setPaymentDetail] = useState({
-        address: undefined,
-        methods: ""
+    const [currentStep, setCurrentStep] = useState<number>(-1);
+    const [paymentDetail, setPaymentDetail] = useState<IPaymentDetail>({
+        shippingAddress: {
+            receiver: "",
+            phoneNumber: "",
+            address: ""
+        },
+        paymentMethod: ""
     });
-
+    const user = useAppSelector(state => state.auth.user);
     const productList = useAppSelector(state => state.cart.productList);
-
+    const dispatch = useAppDispatch();
     const totalAmount = productList.reduce((a, b) =>
         a + b.quantity * b.productId.price * (1 - b.productId.discountPercentage / 100)
         , 0) ?? 0;
@@ -63,28 +77,95 @@ const Checkout = () => {
     const renderComponent = () => {
         switch (currentStep) {
             case 0:
-                return <ShippingAddress onSelectAddress={(value) => {
-                    if (!value) {
-                        notification.error({
-                            message: "Lỗi",
-                            description: "Không tìm thấy địa chỉ"
-                        });
-                        return;
-                    }
-                    console.log(value);
-                    setCurrentStep(1);
-                }} />;
+                return <ShippingAddress
+                    onSelectAddress={(value) => {
+                        if (!value) {
+                            notification.error({
+                                message: "Lỗi",
+                                description: "Không tìm thấy địa chỉ"
+                            });
+                            return;
+                        }
+                        const shippingAddress = {
+                            receiver: value.name,
+                            phoneNumber: value.phoneNumber,
+                            address: `${value.homeNo ?
+                                value.homeNo + ", " : ""}${value.ward}, ${value.district}, Tỉnh ${value.province}`,
+                        }
+                        setPaymentDetail(prev => ({ ...prev, shippingAddress }))
+                        setCurrentStep(1);
+                    }}
+                />;
             case 1:
                 return <PaymentMethod
                     onSelectPaymentMethod={(value) => {
-                        console.log(value);
+                        if (!value) {
+                            notification.error({
+                                message: "Lỗi",
+                                description: "Không tìm thấy phương thức thanh toán"
+                            });
+                            return;
+                        }
+                        setPaymentDetail(prev => ({ ...prev, paymentMethod: value }))
                         setCurrentStep(2);
-                    }} />;
+                    }}
+                />;
             case 2:
-                return <Reviews />;
+                return <Reviews
+                    setCurrentStep={setCurrentStep}
+                    paymentDetail={paymentDetail}
+                />;
             default:
                 return <ListCart />
         }
+    }
+
+    const handlePaymentOrder = async () => {
+        setIsLoading(true);
+        try {
+            const products = productList.map(item => ({
+                title: item.productId.title,
+                quantity: item.quantity,
+                color: item.color,
+                thumbnail: item.productId.thumbnail,
+                price: item.productId.price
+            }))
+
+            const data = {
+                userId: user._id ?? "",
+                totalAmount,
+                products,
+                shippingAddress: paymentDetail.shippingAddress,
+                paymentMethod: paymentDetail.paymentMethod,
+            }
+            const res = await callCreateOrder(data);
+            if (res.data) {
+                dispatch(doOrderProduct())
+                Modal.success({
+                    title: "Đặt hàng thành công",
+                    content: "Cảm ơn bạn đã mua hàng của chúng tôi!",
+                    onOk: () => {
+                        setCurrentStep(-1);
+                        setPaymentDetail({
+                            shippingAddress: {
+                                receiver: "",
+                                phoneNumber: "",
+                                address: ""
+                            },
+                            paymentMethod: ""
+                        })
+                    }
+                });
+            } else {
+                notification.error({
+                    message: "Đặt hàng thất bại",
+                    description: res.message && Array.isArray(res.message) ? res.message.toString() : res.message,
+                })
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        setIsLoading(false);
     }
 
     return (
@@ -93,9 +174,9 @@ const Checkout = () => {
                 <div className="container mt-4">
                     <div className="row">
                         <div className="col-12 col-lg-9">
-                            {currentStep !== undefined &&
+                            {currentStep >= 0 &&
                                 <>
-                                    <Card>
+                                    <Card className="mb-3">
                                         <Steps
                                             current={currentStep}
                                             labelPlacement="vertical"
@@ -126,8 +207,18 @@ const Checkout = () => {
                                     </Card>
                                 </>
                             }
-
-                            {renderComponent()}
+                            <Card>
+                                {currentStep >= 0 &&
+                                    <Button
+                                        type="text"
+                                        icon={<TbArrowLeft size={16} />}
+                                        onClick={() => setCurrentStep(prev => prev - 1)}
+                                    >
+                                        Trở lại
+                                    </Button>
+                                }
+                                {renderComponent()}
+                            </Card>
                         </div>
                         <div className="col-12 col-lg-3 mt-lg-0 mt-3">
                             <Card
@@ -174,13 +265,30 @@ const Checkout = () => {
                                         <Title level={4}>Thành tiền: </Title>
                                         <Title level={4}>{VND.format(totalAmount - grandTotal)}</Title>
                                     </Space>
-                                    {currentStep === undefined &&
+                                    {currentStep < 0 &&
                                         <Button
+                                            disabled={productList.length === 0}
                                             style={{ width: "100%" }}
                                             type="primary"
-                                            onClick={() => setCurrentStep(0)}
+                                            onClick={() => setCurrentStep(prev => prev + 1)}
+                                            icon={<TbArrowRight size={16} />}
+                                            iconPosition="end"
                                         >
-                                            Tiếp tục</Button>
+                                            Tiếp tục
+                                        </Button>
+                                    }
+
+                                    {currentStep === 2 &&
+                                        <Button
+                                            loading={isLoading}
+                                            style={{ width: "100%" }}
+                                            type="primary"
+                                            onClick={handlePaymentOrder}
+                                            icon={<TbArrowRight size={16} />}
+                                            iconPosition="end"
+                                        >
+                                            Thanh toán
+                                        </Button>
                                     }
                                 </div>
                             </Card>

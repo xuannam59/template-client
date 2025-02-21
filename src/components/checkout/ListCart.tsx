@@ -1,8 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { cartSate, doGetCart } from "@/redux/reducers/cart.reducer";
+import { cartSate, doChangeQuantityOrColor, doGetCart } from "@/redux/reducers/cart.reducer";
 import { IProducts } from "@/types/backend";
 import { VND } from "@/utils/handleCurrency";
-import { Avatar, Button, Card, InputNumber, notification, Select, Space, Tag, Typography } from "antd";
+import { Avatar, Button, InputNumber, notification, Select, Space, Tag, Typography } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
 import { useState } from "react";
 import { TbMinus, TbPlus } from "react-icons/tb";
@@ -12,7 +12,7 @@ import { callChangeProductType } from "@/apis/api";
 const { Paragraph, Title } = Typography
 
 const ListCart = () => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [loadingProduct, setLoadingProduct] = useState<{ [key: string]: boolean }>({});
 
     const dispatch = useAppDispatch();
     const productList = useAppSelector(state => state.cart.productList);
@@ -29,9 +29,8 @@ const ListCart = () => {
         {
             title: "Sản phẩm",
             key: "product",
-            width: 350,
+            width: 300,
             render: (item: cartSate["productList"][number]) => {
-                console.log(item)
                 return <>
                     <Space>
                         <Avatar className="d-none d-lg-block" src={item.productId.thumbnail} size={52} shape="square" />
@@ -49,38 +48,39 @@ const ListCart = () => {
             key: "quantity",
             align: "center",
             render: (product: cartSate["productList"][number]) => {
-                const productQuantity = product.productId.versions.find(item => item.color === product.color)?.quantity ?? 0;
+                const maxQuantity = product.productId.versions.find(item => item.color === product.color)?.quantity ?? 0;
                 return <>
                     <Space
                         size={"middle"}
                         align="center" >
                         <div className="button-grounds">
                             <Button
-                                loading={isLoading}
+                                loading={loadingProduct[product.productId._id] || false}
                                 disabled={product.quantity <= 1}
                                 type="text"
-                                icon={<TbMinus size={20} />}
-                                onClick={() => handleChangeProductInCart(product._id, product.quantity - 1, "quantity")}
+                                icon={<TbMinus size={16} />}
+                                onClick={() => handleChangeProductInCart(product.productId._id,
+                                    product.quantity - 1, "quantity", maxQuantity)}
                             />
                             <InputNumber
-                                disabled={isLoading}
+                                disabled={loadingProduct[product.productId._id] || false}
                                 variant="borderless"
-                                style={{ width: "40px" }}
+                                style={{ width: "25px" }}
                                 controls={false}
                                 min={1}
                                 value={product.quantity}
-                                max={productQuantity}
+                                max={maxQuantity}
                                 onBlur={(e) => {
-                                    const minQuantity = Math.min(+e.target.value, productQuantity);
-                                    handleChangeProductInCart(product._id, minQuantity, "quantity")
+                                    const minQuantity = Math.min(+e.target.value, maxQuantity);
+                                    handleChangeProductInCart(product.productId._id, minQuantity, "quantity", maxQuantity)
                                 }}
                             />
                             <Button
-                                loading={isLoading}
-                                disabled={product.quantity >= productQuantity}
+                                loading={loadingProduct[product.productId._id] || false}
+                                disabled={product.quantity >= maxQuantity}
                                 type="text"
-                                icon={<TbPlus size={20} />}
-                                onClick={() => handleChangeProductInCart(product._id, product.quantity + 1, "quantity")}
+                                icon={<TbPlus size={16} />}
+                                onClick={() => handleChangeProductInCart(product.productId._id, product.quantity + 1, "quantity", maxQuantity)}
                             />
                         </div>
                     </Space>
@@ -107,15 +107,17 @@ const ListCart = () => {
                 const colorOptions = product.productId.versions.map(version => version.color);
                 return (
                     <Select
-                        disabled={isLoading}
+                        disabled={loadingProduct[product.productId._id] || false}
                         value={product.color}
-                        onChange={(newColor) => handleChangeProductInCart(product._id, newColor, "color")}
+                        onChange={(newColor) => handleChangeProductInCart(product.productId._id, newColor, "color")}
                         style={{ width: 70 }}
                     >
                         {colorOptions.map(color => (
                             <Select.Option key={color} value={color}>
                                 <div className="d-flex align-items-center">
-                                    <Tag color={color} style={{ width: 20, height: 20, border: "2px solid #2121211a" }} />
+                                    <Tag
+                                        color={color}
+                                        style={{ width: 18, height: 18, border: "1px solid #2121211a" }} />
                                 </div>
                             </Select.Option>
                         ))}
@@ -140,17 +142,18 @@ const ListCart = () => {
             dataIndex: "",
             render: (item: cartSate["productList"][number]) => {
                 return <>
-                    <ButtonRemoveCartItem id={item._id} />
+                    <ButtonRemoveCartItem id={item.productId._id} color={item.color} />
                 </>
             },
         }
     ];
-    const handleChangeProductInCart = async (id: string, value: number | string, type: string) => {
-        setIsLoading(true);
+
+    const handleChangeProductInCart = async (id: string, value: number | string, type: string, maxQuantity?: number) => {
+        setLoadingProduct(prev => ({ ...prev, [id]: true }));
         try {
             const res = await callChangeProductType(id, value, type);
             if (res.data) {
-                dispatch(doGetCart(res.data));
+                dispatch(doChangeQuantityOrColor({ productId: id, value, type, maxQuantity }))
             } else {
                 notification.error({
                     message: "Error Change quantity",
@@ -160,23 +163,21 @@ const ListCart = () => {
         } catch (error) {
             console.log(error)
         } finally {
-            setIsLoading(false)
+            setLoadingProduct(prev => ({ ...prev, [id]: false }));
         }
     }
     return (
         <>
-            <Card>
-                <Title level={4} >Giỏ hàng</Title>
-                <Table
-                    dataSource={productList}
-                    columns={columns}
-                    rowKey="_id"
-                    pagination={false}
-                    scroll={{
-                        x: "max-content"
-                    }}
-                />
-            </Card>
+            <Title level={4} >Giỏ hàng</Title>
+            <Table
+                dataSource={productList}
+                columns={columns}
+                rowKey={"_id"}
+                pagination={false}
+                scroll={{
+                    x: "max-content"
+                }}
+            />
         </>
 
     )

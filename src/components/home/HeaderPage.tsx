@@ -2,7 +2,7 @@ import { callLogOut } from '@/apis/api';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { doLogOutAction } from '@/redux/reducers/auth.reducer';
 import { VND } from '@/utils/handleCurrency';
-import { Avatar, Badge, Button, Card, Divider, Drawer, Dropdown, Layout, List, Menu, MenuProps, Space, Tag, Typography } from 'antd';
+import { Avatar, Badge, Button, Card, Divider, Drawer, Dropdown, Image, Layout, List, Menu, MenuProps, Space, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { TbBell, TbChecklist, TbLogout, TbMenu2, TbSearch, TbShoppingCart, TbUser } from 'react-icons/tb';
 import { Link, useLocation, useNavigate } from 'react-router';
@@ -44,7 +44,6 @@ const HeaderPage = () => {
     , 0);
 
   const navigate = useNavigate();
-
   const handleConvertCategories = () => {
     const newCategories = categories.map(item => ({
       _id: item._id,
@@ -91,7 +90,8 @@ const HeaderPage = () => {
         top: 0,
         zIndex: 1,
         width: '100%',
-        boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px"
+        boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+
       }}
       >
         <div className="row">
@@ -103,8 +103,10 @@ const HeaderPage = () => {
             />
           </div> {/*Update*/}
           <div className="col-md-4 col-lg-2 d-none d-md-block fs-3 text-sm-center text-lg-start">
-            <Link to={"/"} style={{ color: "black" }}>
-              <strong style={{ color: "#00a854" }}>J</strong>un<strong style={{ color: "#6252cd" }}>K</strong>un
+            <Link to={"/"} className='d-flex align-items-center'>
+              <Image src='/images/logo-web.png' preview={false} style={{
+                width: "130px"
+              }} />
             </Link>
           </div>
           <div className="col-lg-7 d-none d-lg-block text-center">
@@ -113,7 +115,7 @@ const HeaderPage = () => {
               items={items}
               theme="light"
               selectedKeys={[activeMenu]}
-              className='justify-content-center'
+              className='justify-content-center border-0'
               onClick={(e) => setActiveMenu(e.key)}
             />
           </div>
@@ -135,7 +137,7 @@ const HeaderPage = () => {
                             <List.Item
                               key={item.productId._id}
                               extra={
-                                <ButtonRemoveCartItem id={item._id} />
+                                <ButtonRemoveCartItem id={item.productId._id} color={item.color} />
                               }>
                               <List.Item.Meta
                                 avatar={

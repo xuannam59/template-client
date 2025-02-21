@@ -8,7 +8,7 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import { VND } from "@/utils/handleCurrency";
 import { TbCheck, TbMinus, TbPlus } from "react-icons/tb";
 import { useAppDispatch } from "@/redux/hook";
-import { doGetCart } from "@/redux/reducers/cart.reducer";
+import { doAddProduct, doGetCart } from "@/redux/reducers/cart.reducer";
 import Tabbar from "@/components/home/Tabbar";
 import ProductItem from "@/components/product/ProductItem";
 import ProductReviews from "@/components/product/ProductReviews";
@@ -36,6 +36,7 @@ const ProductDetail = () => {
         window.scrollTo(0, 0);
         fetchProductDetail()
         getRelatedProducts()
+        setCount(1);
     }, [slug]);
 
     const quantity = dataDetail ? dataDetail.versions.find(item => item.color === selectColor)?.quantity : 0;
@@ -74,23 +75,30 @@ const ProductDetail = () => {
     const handleAddItem = async () => {
         setIsLoading(true)
         try {
-            const id = dataDetail ? dataDetail?._id : ""
-            const res = await callAddProductToCart(id, count, selectColor);
-            if (res.data) {
-                dispatch(doGetCart(res.data));
-                message.success("Thêm vào giỏ hàng thành công")
-            } else {
-                res.statusCode === 400 ?
-                    notification.warning({
-                        message: "Warning",
-                        description: res.message,
-                        duration: 3
-                    }) :
-                    notification.error({
-                        message: "Error",
-                        description: res.message && Array.isArray(res.message) ? res.message.toString() : res.message,
-                        duration: 3
-                    })
+            if (dataDetail) {
+                const data = {
+                    productId: dataDetail,
+                    color: selectColor,
+                    quantity: count,
+                    maxQuantity: quantity
+                }
+                const res = await callAddProductToCart(data.productId._id, data.quantity, data.color);
+                if (res.data) {
+                    dispatch(doAddProduct(data));
+                    message.success("Thêm vào giỏ hàng thành công")
+                } else {
+                    res.statusCode === 400 ?
+                        notification.warning({
+                            message: "Warning",
+                            description: res.message,
+                            duration: 3
+                        }) :
+                        notification.error({
+                            message: "Error",
+                            description: res.message && Array.isArray(res.message) ? res.message.toString() : res.message,
+                            duration: 3
+                        })
+                }
             }
         } catch (error) {
             console.log(error)
@@ -212,13 +220,12 @@ const ProductDetail = () => {
                                             Màu sắc :
                                         </Text>
                                         {dataDetail.versions.map(item =>
-                                            <a key={item.color}>
-                                                <div
-                                                    className={`color-item ${selectColor === item.color ? "active" : ""}`}
-                                                    style={{ background: item.color }}
-                                                    onClick={() => setSelectColor(item.color)}
-                                                />
-                                            </a>
+                                            <div
+                                                key={item.color}
+                                                className={`color-item ${selectColor === item.color ? "active" : ""}`}
+                                                style={{ background: item.color }}
+                                                onClick={() => setSelectColor(item.color)}
+                                            />
                                         )}
                                     </Space>
                                 </div>

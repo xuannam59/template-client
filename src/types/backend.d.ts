@@ -190,3 +190,27 @@ export interface IReview {
 }
 
 export interface IDiscuss extends Omit<IReview, "images" | "like" | "star" | "product_id"> { }
+
+export interface IOrder {
+    _id: string
+    userId: string;
+    totalAmount: number;
+    products: {
+        title: string
+        quantity: number
+        color: string
+        thumbnail: string
+        price: number
+    }[];
+    shippingAddress: {
+        receiver: string
+        phoneNumber: string
+        address: string
+    };
+    status: number;
+    paymentStatus: number;
+    paymentMethod: string;
+
+    createdAt?: string
+    updatedAt?: string
+}

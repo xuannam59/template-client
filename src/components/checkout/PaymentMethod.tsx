@@ -1,12 +1,14 @@
-import { Button, Card, List, Modal, Radio, Typography } from "antd";
+import { Button, List, Modal, Radio, Typography } from "antd";
 import { useState } from "react";
 import CreditCardPayment from "./CreditCardPayment";
+import { TbArrowRight } from "react-icons/tb";
+import Section from "../home/Section";
 
 interface IProps {
     onSelectPaymentMethod: (value: any) => void
 }
 
-const methods = [
+export const methods = [
     {
         key: "cod",
         title: "Thanh toán khi nhận hàng"
@@ -54,9 +56,7 @@ const PaymentMethod = (props: IProps) => {
     }
     return (
         <>
-
-
-            <Card className="mt-3">
+            <Section>
                 <Title level={4}>Phương thúc thanh toán</Title>
                 <List
                     dataSource={methods}
@@ -65,6 +65,7 @@ const PaymentMethod = (props: IProps) => {
                             <List.Item.Meta
                                 title={
                                     <Radio
+                                        disabled={item.key !== 'cod'}
                                         onChange={() => setMethodSelected(item.key)}
                                         checked={item.key === methodSelected}
                                     >
@@ -82,9 +83,12 @@ const PaymentMethod = (props: IProps) => {
                     className="mt-3"
                     type="primary"
                     onClick={handlePayment}
+                    icon={<TbArrowRight size={16} />}
+                    iconPosition="end"
                 >
-                    Tiếp tục</Button>
-            </Card>
+                    Tiếp tục
+                </Button>
+            </Section>
             <Modal
                 open={isVisibleModelPayment}
                 onOk={() => setIsVisibleModelPayment(false)}

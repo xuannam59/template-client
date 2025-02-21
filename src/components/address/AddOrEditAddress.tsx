@@ -3,21 +3,20 @@ import { useAppDispatch } from "@/redux/hook";
 import { doGetCart } from "@/redux/reducers/cart.reducer";
 import { ISelectModel, IUserAddress } from "@/types/backend";
 import { replaceName } from "@/utils/replaceName";
-import { Button, Card, Checkbox, Form, Input, message, notification, Select, Typography } from "antd";
+import { Button, Card, Checkbox, Form, Input, message, Modal, notification, Select, Typography } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
 interface IProps {
+    isOpenModal: boolean
     isEditAddress?: IUserAddress
     onCancel: () => void
 }
 
 const OPENAPILOCATION = "https://open.oapi.vn/location"
 
-const { Title } = Typography
-
 const AddOrEditAddress = (props: IProps) => {
-    const { isEditAddress, onCancel } = props;
+    const { isOpenModal, isEditAddress, onCancel } = props;
     const [isLoading, setIsLoading] = useState(false);
     const [locationData, setLocationData] = useState<{
         provinces: ISelectModel[],
@@ -101,7 +100,7 @@ const AddOrEditAddress = (props: IProps) => {
                     districts: [],
                     wards: []
                 })
-                isEditAddress && onCancel()
+                onCancel()
             } else {
                 notification.error({
                     message: "Error",
@@ -117,8 +116,13 @@ const AddOrEditAddress = (props: IProps) => {
 
     return (
         <>
-            <Card>
-                <Title level={3}>Thêm địa chỉ mới</Title>
+            <Modal
+                title={`${isEditAddress ? "Cập nhập" : "Thêm mới"} địa chỉ`}
+                open={isOpenModal}
+                onOk={() => form.submit()}
+                onCancel={onCancel}
+                okText={isEditAddress ? "Cập nhập" : "Tạo mới"}
+            >
                 <Form
                     layout="vertical"
                     disabled={isLoading}
@@ -150,98 +154,110 @@ const AddOrEditAddress = (props: IProps) => {
                     >
                         <Input type="tel" allowClear maxLength={10} placeholder="Số điện thoại" />
                     </Form.Item>
-                    <Form.Item
-                        name={"homeNo"}
-                        label={"Số nhà"}
-                    >
-                        <Input allowClear placeholder="Số nhà" />
-                    </Form.Item>
-                    <Form.Item
-                        name={"province"}
-                        label={"Tỉnh"}
-                        rules={[
-                            {
-                                required: true,
-                                message: "Vui lòng không để trống"
-                            }
-                        ]}
-                    >
-                        <Select
-                            options={locationData.provinces}
-                            disabled={locationData.provinces.length === 0}
-                            onChange={async (value) => {
-                                await fetchLocationData("districts", value)
-                                form.resetFields(["district", 'ward'])
-                            }
-                            }
-                            optionFilterProp="label"
-                            filterOption={(input, option) =>
-                                (replaceName(option?.label as string) ?? '').includes(
-                                    replaceName(input)
-                                )}
-                            filterSort={(optionA, optionB) =>
-                                (optionA?.label ?? '')
-                                    .toLowerCase()
-                                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                            }
-                            showSearch
-                        />
-                    </Form.Item>
-                    <Form.Item
-                        name={"district"}
-                        label={"Huyện"}
-                        rules={[
-                            {
-                                required: true,
-                                message: "Vui lòng không để trống"
-                            }
-                        ]}
-                    >
-                        <Select
-                            disabled={locationData.districts.length === 0}
-                            options={locationData.districts}
-                            onChange={async (value) => {
-                                await fetchLocationData("wards", value)
-                            }}
-                            optionFilterProp="label"
-                            filterOption={(input, option) =>
-                                (replaceName(option?.label as string) ?? '').includes(
-                                    replaceName(input)
-                                )}
-                            filterSort={(optionA, optionB) =>
-                                (optionA?.label ?? '')
-                                    .toLowerCase()
-                                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                            }
-                            showSearch
-                        />
-                    </Form.Item>
-                    <Form.Item
-                        name={"ward"}
-                        label={"Phường, xã"}
-                        rules={[
-                            {
-                                required: true,
-                                message: "Vui lòng không để trống"
-                            }
-                        ]}
-                    >
-                        <Select
-                            disabled={locationData.wards.length === 0}
-                            options={locationData.wards}
-                            optionFilterProp="label"
-                            filterOption={(input, option) =>
-                                (replaceName(option?.label as string) ?? '').includes(
-                                    replaceName(input)
-                                )}
-                            filterSort={(optionA, optionB) =>
-                                (optionA?.label ?? '')
-                                    .toLowerCase()
-                                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                            }
-                            showSearch
-                        />
-                    </Form.Item>
+                    <div className="row">
+                        <div className="col">
+                            <Form.Item
+                                name={"homeNo"}
+                                label={"Số nhà"}
+                            >
+                                <Input allowClear placeholder="Số nhà" />
+                            </Form.Item>
+                        </div>
+                        <div className="col">
+                            <Form.Item
+                                name={"province"}
+                                label={"Tỉnh"}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Vui lòng không để trống"
+                                    }
+                                ]}
+                            >
+                                <Select
+                                    options={locationData.provinces}
+                                    disabled={locationData.provinces.length === 0}
+                                    onChange={async (value) => {
+                                        await fetchLocationData("districts", value)
+                                        form.resetFields(["district", 'ward'])
+                                    }
+                                    }
+                                    optionFilterProp="label"
+                                    filterOption={(input, option) =>
+                                        (replaceName(option?.label as string) ?? '').includes(
+                                            replaceName(input)
+                                        )}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '')
+                                            .toLowerCase()
+                                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    showSearch
+                                />
+                            </Form.Item>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <Form.Item
+                                name={"district"}
+                                label={"Huyện"}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Vui lòng không để trống"
+                                    }
+                                ]}
+                            >
+                                <Select
+                                    disabled={locationData.districts.length === 0}
+                                    options={locationData.districts}
+                                    onChange={async (value) => {
+                                        await fetchLocationData("wards", value)
+                                    }}
+                                    optionFilterProp="label"
+                                    filterOption={(input, option) =>
+                                        (replaceName(option?.label as string) ?? '').includes(
+                                            replaceName(input)
+                                        )}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '')
+                                            .toLowerCase()
+                                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    showSearch
+                                />
+                            </Form.Item>
+                        </div>
+                        <div className="col">
+                            <Form.Item
+                                name={"ward"}
+                                label={"Phường, xã"}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Vui lòng không để trống"
+                                    }
+                                ]}
+                            >
+                                <Select
+                                    disabled={locationData.wards.length === 0}
+                                    options={locationData.wards}
+                                    optionFilterProp="label"
+                                    filterOption={(input, option) =>
+                                        (replaceName(option?.label as string) ?? '').includes(
+                                            replaceName(input)
+                                        )}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '')
+                                            .toLowerCase()
+                                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    showSearch
+                                />
+                            </Form.Item>
+                        </div>
+                    </div>
                     <Form.Item
                         name="isDefault"
                         valuePropName="checked"
@@ -249,17 +265,7 @@ const AddOrEditAddress = (props: IProps) => {
                         <Checkbox>Địa chỉ mặc định</Checkbox>
                     </Form.Item>
                 </Form>
-
-                <Button onClick={() => form.submit()} type="primary" >{isEditAddress ? "Cập nhập" : "Thêm địa chỉ"}</Button>
-                {isEditAddress &&
-                    <Button
-                        className="ms-2"
-                        onClick={() => {
-                            onCancel();
-                            form.resetFields();
-                        }}>Huỷ</Button>
-                }
-            </Card>
+            </Modal>
         </>
     )
 }
