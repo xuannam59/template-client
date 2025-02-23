@@ -1,9 +1,9 @@
 import { callAddNewAddress, callEditAddress } from "@/apis/api";
-import { useAppDispatch } from "@/redux/hook";
-import { doGetCart } from "@/redux/reducers/cart.reducer";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { doAddAddress, doGetCart, doUpdateAddress } from "@/redux/reducers/cart.reducer";
 import { ISelectModel, IUserAddress } from "@/types/backend";
 import { replaceName } from "@/utils/replaceName";
-import { Button, Card, Checkbox, Form, Input, message, Modal, notification, Select, Typography } from "antd";
+import { Checkbox, Form, Input, message, Modal, notification, Select } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -27,7 +27,7 @@ const AddOrEditAddress = (props: IProps) => {
         districts: [],
         wards: []
     });
-
+    const user = useAppSelector(state => state.auth.user);
     const dispatch = useAppDispatch()
 
     const [form] = Form.useForm();
@@ -78,29 +78,35 @@ const AddOrEditAddress = (props: IProps) => {
     }
 
     const handleAddOrEditAddress = async (values: IUserAddress) => {
-        let { name, phoneNumber, homeNo, province, district, ward, isDefault } = values
+        let { province, district, ward } = values
         setIsLoading(true);
 
         province = locationData.provinces.find(item => item.value == province)?.label ?? "";
         district = locationData.districts.find(item => item.value == district)?.label ?? "";
         ward = locationData.wards.find(item => item.value == ward)?.label ?? "";
+
         try {
+
             const apiCall = isEditAddress
-                ? callEditAddress(isEditAddress._id, name, phoneNumber, homeNo, province, district, ward, isDefault)
-                : callAddNewAddress(name, phoneNumber, homeNo, province, district, ward, isDefault);
+                ? callEditAddress(isEditAddress._id, { ...values, province, district, ward })
+                : callAddNewAddress({ ...values, province, district, ward });
 
             const res = await apiCall;
             if (res.data) {
-                dispatch(doGetCart(res.data));
+                isEditAddress ?
+                    dispatch(doUpdateAddress({ ...values, _id: isEditAddress._id, province, district, ward }))
+                    :
+                    dispatch(doAddAddress({ ...values, _id: res.data, province, district, ward }));
+
                 message.success(isEditAddress ? "Cập nhật địa chỉ thành công" : "Thêm mới địa chỉ thành công");
 
-                form.resetFields();
                 setLocationData({
                     provinces: locationData.provinces,
                     districts: [],
                     wards: []
                 })
-                onCancel()
+                onClose()
+
             } else {
                 notification.error({
                     message: "Error",
@@ -114,22 +120,45 @@ const AddOrEditAddress = (props: IProps) => {
         }
     }
 
+    const onClose = () => {
+        form.resetFields();
+        onCancel()
+    }
     return (
         <>
             <Modal
                 title={`${isEditAddress ? "Cập nhập" : "Thêm mới"} địa chỉ`}
                 open={isOpenModal}
                 onOk={() => form.submit()}
-                onCancel={onCancel}
+                onCancel={onClose}
                 okText={isEditAddress ? "Cập nhập" : "Tạo mới"}
+                maskClosable={false}
             >
                 <Form
                     layout="vertical"
                     disabled={isLoading}
                     form={form}
                     onFinish={handleAddOrEditAddress}
-                    initialValues={{ isDefault: true }}
+                    initialValues={{
+                        isDefault: true,
+                        email: user ? user.email : ""
+                    }}
                 >
+                    <Form.Item
+                        name={"email"}
+                        label={"Email"}
+                        rules={[
+                            {
+                                required: true,
+                                message: "Vui lòng không để trống"
+                            }
+                        ]}
+                    >
+                        <Input
+                            disabled={user ? true : false}
+                            placeholder="Nhập email để không nhận thông tin đơn hàng"
+                        />
+                    </Form.Item>
                     <Form.Item
                         name={"name"}
                         label={"Tên người nhận"}

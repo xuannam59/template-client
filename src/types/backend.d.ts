@@ -159,6 +159,7 @@ export interface ISelectModel {
 
 export interface IUserAddress {
     _id: string
+    email: string
     name: string
     phoneNumber: string
     homeNo: string

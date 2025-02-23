@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { cartSate, doChangeQuantityOrColor, doGetCart } from "@/redux/reducers/cart.reducer";
+import { cartSate, doChangeQuantityOrColor } from "@/redux/reducers/cart.reducer";
 import { IProducts } from "@/types/backend";
 import { VND } from "@/utils/handleCurrency";
 import { Avatar, Button, InputNumber, notification, Select, Space, Tag, Typography } from "antd";

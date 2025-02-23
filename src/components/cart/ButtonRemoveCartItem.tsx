@@ -1,6 +1,6 @@
 import { callRemoveProductToCart } from '@/apis/api';
 import { useAppDispatch } from '@/redux/hook';
-import { doGetCart, doRemoveProduct } from '@/redux/reducers/cart.reducer';
+import { doRemoveProduct } from '@/redux/reducers/cart.reducer';
 import { Button, message, Modal, notification } from 'antd';
 import { TbTrash } from 'react-icons/tb';
 

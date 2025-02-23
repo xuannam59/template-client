@@ -1,6 +1,6 @@
 import { callDeleteAddress } from "@/apis/api";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { doGetCart } from "@/redux/reducers/cart.reducer";
+import { doGetCart, doRemoveAddress } from "@/redux/reducers/cart.reducer";
 import { IUserAddress } from "@/types/backend";
 import { Button, Card, List, message, Modal, notification, Typography } from "antd";
 import { useEffect, useState } from "react";
@@ -33,7 +33,7 @@ const ShippingAddress = (props: IProps) => {
         try {
             const res = await callDeleteAddress(id);
             if (res.data) {
-                dispatch(doGetCart(res.data));
+                dispatch(doRemoveAddress(id));
                 message.success("Xoá địa chỉ thành công");
             } else {
                 notification.error({
@@ -53,15 +53,14 @@ const ShippingAddress = (props: IProps) => {
                         <Title level={4} className="">Lựa chọn một địa điểm giao hàng</Title>
                     </div>
                     <div className="col text-end">
-                        {userAddress.length < 2 &&
-                            <Button
-                                type="primary"
-                                icon={<TbPlus size={16} />}
-                                onClick={() => setIsOpenModal(true)}
-                            >
-                                Thêm Mới
-                            </Button>
-                        }
+                        <Button
+                            disabled={userAddress.length === 2}
+                            type="primary"
+                            icon={<TbPlus size={16} />}
+                            onClick={() => setIsOpenModal(true)}
+                        >
+                            Thêm Mới
+                        </Button>
                     </div>
                 </div>
                 <Paragraph type="secondary">

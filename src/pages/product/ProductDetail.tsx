@@ -1,18 +1,18 @@
 import { callAddProductToCart, callGetProductDetail, callGetRelatedProduct } from "@/apis/api";
-import { IProducts } from "@/types/backend";
-import { Breadcrumb, Button, InputNumber, message, notification, Rate, Space, Tabs, Typography } from "antd";
-import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router"
-import ImageGallery from "react-image-gallery";
-import "react-image-gallery/styles/css/image-gallery.css";
-import { VND } from "@/utils/handleCurrency";
-import { TbCheck, TbMinus, TbPlus } from "react-icons/tb";
-import { useAppDispatch } from "@/redux/hook";
-import { doAddProduct, doGetCart } from "@/redux/reducers/cart.reducer";
 import Tabbar from "@/components/home/Tabbar";
+import ProductDiscuss from "@/components/product/ProductDiscuss";
 import ProductItem from "@/components/product/ProductItem";
 import ProductReviews from "@/components/product/ProductReviews";
-import ProductDiscuss from "@/components/product/ProductDiscuss";
+import { useAppDispatch } from "@/redux/hook";
+import { doAddProduct } from "@/redux/reducers/cart.reducer";
+import { IProducts } from "@/types/backend";
+import { VND } from "@/utils/handleCurrency";
+import { Breadcrumb, Button, InputNumber, message, notification, Rate, Space, Tabs, Typography } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { TbCheck, TbMinus, TbPlus } from "react-icons/tb";
+import ImageGallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
+import { Link, useParams } from "react-router";
 
 
 const { Title, Text, Paragraph } = Typography;
