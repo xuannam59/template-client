@@ -77,12 +77,12 @@ const ProductDetail = () => {
         try {
             if (dataDetail) {
                 const data = {
-                    productId: dataDetail,
+                    productDetail: dataDetail,
                     color: selectColor,
                     quantity: count,
                     maxQuantity: quantity
                 }
-                const res = await callAddProductToCart(data.productId._id, data.quantity, data.color);
+                const res = await callAddProductToCart(data.productDetail._id, data.quantity, data.color);
                 if (res.data) {
                     dispatch(doAddProduct(data));
                     message.success("Thêm vào giỏ hàng thành công")

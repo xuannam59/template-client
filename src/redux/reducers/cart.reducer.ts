@@ -65,18 +65,19 @@ const cartSlide = createSlice({
       state.userAddress = state.userAddress.filter(item => item._id !== _id);
     },
     doAddProduct: (state, action) => {
-      const { productId, quantity, maxQuantity, color } = action.payload
-      action.payload._id = productId;
+      const { productDetail, quantity, maxQuantity, color } = action.payload
+
       const existProduct = state.productList.findIndex(item => {
-        const exist = item.productId._id === productId && item.color === color
+        const exist = item.productId._id === productDetail._id && item.color === color
         return exist;
       });
+      console.log(existProduct);
       if (existProduct === -1) {
-        state.productList.unshift(action.payload);
+        state.productList.unshift({ productId: productDetail, quantity, color, _id: productDetail._id });
         return;
       }
       const newProductList = state.productList.map(item => {
-        if (item.productId._id === productId) {
+        if (item.productId._id === productDetail._id) {
           item.quantity = Math.min(maxQuantity, item.quantity + quantity);
         }
         return item;

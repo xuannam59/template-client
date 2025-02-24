@@ -15,6 +15,7 @@ export interface IPaymentDetail {
         receiver: string;
         phoneNumber: string;
         address: string;
+        email: string;
     };
     paymentMethod: string;
 }
@@ -30,7 +31,8 @@ const Checkout = () => {
         shippingAddress: {
             receiver: "",
             phoneNumber: "",
-            address: ""
+            address: "",
+            email: ""
         },
         paymentMethod: ""
     });
@@ -91,6 +93,7 @@ const Checkout = () => {
                             phoneNumber: value.phoneNumber,
                             address: `${value.homeNo ?
                                 value.homeNo + ", " : ""}${value.ward}, ${value.district}, Tỉnh ${value.province}`,
+                            email: value.email
                         }
                         setPaymentDetail(prev => ({ ...prev, shippingAddress }))
                         setCurrentStep(1);
@@ -128,14 +131,14 @@ const Checkout = () => {
                 quantity: item.quantity,
                 color: item.color,
                 thumbnail: item.productId.thumbnail,
-                price: item.productId.price
+                price: item.productId.price * (1 - item.productId.discountPercentage / 100)
             }))
 
             const data = {
                 userId: user._id ?? "",
                 totalAmount,
                 products,
-                shippingAddress: paymentDetail.shippingAddress,
+                ...paymentDetail.shippingAddress,
                 paymentMethod: paymentDetail.paymentMethod,
             }
             const res = await callCreateOrder(data);
@@ -150,7 +153,8 @@ const Checkout = () => {
                             shippingAddress: {
                                 receiver: "",
                                 phoneNumber: "",
-                                address: ""
+                                address: "",
+                                email: ""
                             },
                             paymentMethod: ""
                         })

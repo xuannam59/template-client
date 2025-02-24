@@ -1,6 +1,6 @@
 import { callAddNewAddress, callEditAddress } from "@/apis/api";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { doAddAddress, doGetCart, doUpdateAddress } from "@/redux/reducers/cart.reducer";
+import { doAddAddress, doUpdateAddress } from "@/redux/reducers/cart.reducer";
 import { ISelectModel, IUserAddress } from "@/types/backend";
 import { replaceName } from "@/utils/replaceName";
 import { Checkbox, Form, Input, message, Modal, notification, Select } from "antd";
@@ -27,7 +27,7 @@ const AddOrEditAddress = (props: IProps) => {
         districts: [],
         wards: []
     });
-    const user = useAppSelector(state => state.auth.user);
+    const auth = useAppSelector(state => state.auth);
     const dispatch = useAppDispatch()
 
     const [form] = Form.useForm();
@@ -141,12 +141,12 @@ const AddOrEditAddress = (props: IProps) => {
                     onFinish={handleAddOrEditAddress}
                     initialValues={{
                         isDefault: true,
-                        email: user ? user.email : ""
+                        email: auth.isAuthenticated ? auth.user.email : ""
                     }}
                 >
                     <Form.Item
                         name={"email"}
-                        label={"Email"}
+                        label={"Email (Vui lòng nhập email chính xác để theo dõi đơn hàng)"}
                         rules={[
                             {
                                 required: true,
@@ -155,8 +155,8 @@ const AddOrEditAddress = (props: IProps) => {
                         ]}
                     >
                         <Input
-                            disabled={user ? true : false}
-                            placeholder="Nhập email để không nhận thông tin đơn hàng"
+                            disabled={auth.isAuthenticated}
+                            placeholder="Email"
                         />
                     </Form.Item>
                     <Form.Item

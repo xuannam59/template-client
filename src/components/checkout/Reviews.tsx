@@ -3,7 +3,7 @@ import { VND } from "@/utils/handleCurrency";
 import { Avatar, Button, List, Tag, Typography } from "antd"
 import dayjs from "dayjs"
 import Section from "../home/Section";
-import { TbCreditCardPay, TbEdit, TbMapPin, TbPhoneCall, TbUser } from "react-icons/tb";
+import { TbCreditCardPay, TbEdit, TbMail, TbMapPin, TbPhoneCall, TbUser } from "react-icons/tb";
 import { methods } from "./PaymentMethod";
 import { IPaymentDetail } from "@/pages/checkout/Checkout";
 interface IProps {
@@ -84,6 +84,10 @@ const Reviews = (props: IProps) => {
                                             <div className="d-flex align-items-center">
                                                 <TbUser size={18} />
                                                 <Text className="ms-2"> {item.shippingAddress.receiver} </Text>
+                                            </div>
+                                            <div className="d-flex align-items-center">
+                                                <TbMail size={18} />
+                                                <Text className="ms-2"> {item.shippingAddress.email} </Text>
                                             </div>
                                             <div className="d-flex align-items-center">
                                                 <TbPhoneCall size={18} />
