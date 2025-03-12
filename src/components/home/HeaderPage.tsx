@@ -187,10 +187,11 @@ const HeaderPage = () => {
               </Dropdown>
               {isAuthenticated ?
                 <>
-                  <Badge count={0} showZero>
-                    <TbBell size={25} style={{ cursor: "pointer" }} />
-                  </Badge>
-                  <Dropdown menu={{ items: itemsDropDown, style: { minWidth: "150px" } }} arrow placement="bottomRight" >
+                  <Dropdown
+                    menu={{ items: itemsDropDown, style: { minWidth: "150px" } }}
+                    arrow
+                    placement="bottomRight"
+                  >
                     <Space style={{ cursor: "pointer" }}>
                       <Avatar
                         src={user.avatar ? user.avatar : "/images/avatar-user.png"}

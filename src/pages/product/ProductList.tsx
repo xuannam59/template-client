@@ -1,7 +1,11 @@
 import { callGetProducts } from '@/apis/api';
 import ProductItem from '@/components/product/ProductItem';
 import { IProducts } from '@/types/backend';
-import { Breadcrumb, Button, Dropdown, Layout, MenuProps, Pagination, PaginationProps, Skeleton, Space, Typography } from 'antd';
+import {
+    Breadcrumb, Button, Dropdown, Layout,
+    MenuProps, Pagination, PaginationProps,
+    Skeleton, Space, Typography
+} from 'antd';
 import { useEffect, useState } from 'react';
 import { PiChartLineDown, PiChartLineUp } from 'react-icons/pi';
 import { TbChevronDown, TbFilter } from 'react-icons/tb';
@@ -123,7 +127,7 @@ const ProductList = () => {
                                     <div className="d-none d-md-block">
                                         <Dropdown menu={{ items }}>
                                             <Button
-                                                onClick={() => setSort("")}
+                                                onClick={() => setSort("-createdAt")}
                                                 icon={<TbChevronDown size={16} />}
                                                 iconPosition='end'
                                             >

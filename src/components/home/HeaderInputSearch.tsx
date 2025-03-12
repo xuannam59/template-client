@@ -1,5 +1,8 @@
+import { replaceName } from "@/utils/replaceName";
 import { Drawer, Input } from "antd"
+import { useState } from "react";
 import { TbSearch } from "react-icons/tb"
+import { useNavigate } from "react-router";
 
 interface IProps {
     openDrawer: boolean
@@ -8,42 +11,37 @@ interface IProps {
 
 const HeaderInputSearch = (props: IProps) => {
     const { openDrawer, onClose } = props
-    let timeoutId: ReturnType<typeof setTimeout>;
-    // const [result, setResult] = useState(0);
+    const [valueKey, setValueKey] = useState("");
+    const navigate = useNavigate();
 
 
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        if (value.length > 3) {
-            clearTimeout(timeoutId)
-            timeoutId = setTimeout(() => {
-                console.log(value);
-            }, 3000);
+    const onPressEnter = () => {
+        if (valueKey.length > 0) {
+            const slug = replaceName(valueKey);
+            navigate(`products/${slug}`);
+            setValueKey("");
+            onClose();
         }
-    }
-    const onPressEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        const value = (e.target as HTMLInputElement).value.trim();
-        console.log(value);
     }
     return (
         <>
             <Drawer
-                title={"Tìm kiếm"}
+                title={"Tìm kiếm sản phẩm"}
                 open={openDrawer}
                 placement={"top"}
                 closeIcon={false}
                 onClose={onClose}
-                height={120}
+                height={150}
             >
                 <div className="d-flex justify-content-center">
                     <Input
                         suffix={<TbSearch />}
                         maxLength={128}
+                        value={valueKey}
+                        onChange={(e) => setValueKey(e.target.value)}
                         placeholder="Nhập từ khoá."
                         style={{ borderRadius: "20px", width: "80%" }}
-                        onChange={onChange}
                         onPressEnter={onPressEnter}
-
                     />
                 </div>
             </Drawer>

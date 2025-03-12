@@ -1,10 +1,11 @@
-import { callCheckDiscountCode, callCreateOrder } from "@/apis/api";
+import { callCheckDiscountCode, callCreateOrder, callPayOS } from "@/apis/api";
 import ListCart from "@/components/checkout/ListCart";
 import PaymentMethod from "@/components/checkout/PaymentMethod"
 import Reviews from "@/components/checkout/Reviews";
 import ShippingAddress from "@/components/checkout/ShippingAddress";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { doOrderProduct } from "@/redux/reducers/cart.reducer";
+import { IPayOSPost } from "@/types/backend";
 import { VND } from "@/utils/handleCurrency";
 import { Button, Card, Divider, Input, message, Modal, notification, Space, Steps, Typography } from "antd";
 import { useEffect, useState } from "react";
@@ -123,43 +124,61 @@ const Checkout = () => {
         }
     }
 
-    const handlePaymentOrder = async () => {
+    const handleOrder = async () => {
         setIsLoading(true);
         try {
             const products = productList.map(item => ({
+                _id: item.productId._id,
                 title: item.productId.title,
                 quantity: item.quantity,
                 color: item.color,
                 thumbnail: item.productId.thumbnail,
-                price: item.productId.price * (1 - item.productId.discountPercentage / 100)
-            }))
+                price: item.productId.price * (1 - item.productId.discountPercentage / 100),
+                cost: item.productId.cost
+            }));
 
             const data = {
                 userId: user._id ?? "",
-                totalAmount,
+                totalAmount: totalAmount - grandTotal,
+                discountCode,
                 products,
                 ...paymentDetail.shippingAddress,
                 paymentMethod: paymentDetail.paymentMethod,
             }
             const res = await callCreateOrder(data);
             if (res.data) {
-                dispatch(doOrderProduct())
-                Modal.success({
-                    title: "Đặt hàng thành công",
-                    content: "Cảm ơn bạn đã mua hàng của chúng tôi!",
-                    onOk: () => {
-                        setCurrentStep(-1);
-                        setPaymentDetail({
-                            shippingAddress: {
-                                receiver: "",
-                                phoneNumber: "",
-                                address: "",
-                                email: ""
-                            },
-                            paymentMethod: ""
-                        })
+                dispatch(doOrderProduct());
+                if (paymentDetail.paymentMethod === "cod") {
+                    Modal.success({
+                        title: "Đặt hàng thành công",
+                        content: "Cảm ơn bạn đã mua hàng của chúng tôi!",
+                        onOk: () => {
+                            setCurrentStep(-1);
+                            setPaymentDetail({
+                                shippingAddress: {
+                                    receiver: "",
+                                    phoneNumber: "",
+                                    address: "",
+                                    email: ""
+                                },
+                                paymentMethod: ""
+                            })
+                        }
+                    });
+                } else {
+                    const paymentData = {
+                        amount: 2000,
+                        description: `Thanh toán đơn hàng`,
+                        returnUrl: `http://localhost:8080/payment?_id=${res.data._id}`,
+                        cancelUrl: "http://localhost:8080/payment",
+                        items: productList.map(item => ({
+                            name: item.productId.title,
+                            quantity: item.quantity,
+                            price: item.productId.price * (1 - item.productId.discountPercentage / 100)
+                        }))
                     }
-                });
+                    handlePayMent(paymentData);
+                }
             } else {
                 notification.error({
                     message: "Đặt hàng thất bại",
@@ -170,6 +189,22 @@ const Checkout = () => {
             console.log(error);
         }
         setIsLoading(false);
+    }
+
+    const handlePayMent = async (data: IPayOSPost) => {
+        try {
+            const res = await callPayOS(data);
+            if (res.data) {
+                window.location.href = res.data.checkoutUrl;
+            } else {
+                notification.error({
+                    message: "payment failed",
+                    description: res.message
+                })
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
@@ -287,11 +322,14 @@ const Checkout = () => {
                                             loading={isLoading}
                                             style={{ width: "100%" }}
                                             type="primary"
-                                            onClick={handlePaymentOrder}
+                                            onClick={handleOrder}
                                             icon={<TbArrowRight size={16} />}
                                             iconPosition="end"
                                         >
-                                            Thanh toán
+                                            {paymentDetail.paymentMethod === "cod" ?
+                                                "Đặt hàng"
+                                                :
+                                                "Thanh toán"}
                                         </Button>
                                     }
                                 </div>

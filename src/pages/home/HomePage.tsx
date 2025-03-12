@@ -31,7 +31,7 @@ const HomePage = () => {
 
   const getBestSeller = async () => {
     try {
-      const res = await callGetProducts("sort=-sales&pageSize=4");
+      const res = await callGetProducts("sort=-sold&pageSize=4");
       if (res.data) {
         setBestSellers(res.data.result);
       }

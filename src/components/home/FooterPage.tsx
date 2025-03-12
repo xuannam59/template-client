@@ -4,8 +4,12 @@ const { Footer } = Layout
 
 const FooterPage = () => {
     return (
-        <Footer>
-            Copyright Xuan Nam
+        <Footer style={{
+            textAlign: 'center',
+            backgroundColor: "#000000",
+            color: '#fff',
+        }} >
+            JunKay ©{new Date().getFullYear()} Copyright Xuan Nam
         </Footer>
     )
 }

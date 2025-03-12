@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IDiscuss, IForgotPassword, IGetAccount, IProducts, IReview, IUserAddress } from "@/types/backend";
+import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IDiscuss, IForgotPassword, IGetAccount, IPayOS, IPayOSPost, IProducts, IReview, IUserAddress } from "@/types/backend";
 import axios from "./axios.customize";
 
 export const callLogin = (email: string, password: string) => {
@@ -105,6 +105,10 @@ export const callCreateOrder = (data: unknown) => {
     return axios.post<IBackendRes<{ _id: string }>>(`api/v1/orders`, data);
 }
 
+export const callUpdateOrder = (_id: string, orderId: string) => {
+    return axios.patch<IBackendRes<string>>(`api/v1/orders/update/${_id}`, { orderId });
+}
+
 export const callUploadSingleFile = (file: any, folderName: string) => {
     const bodyFormData = new FormData();
     bodyFormData.append("file", file);
@@ -117,5 +121,9 @@ export const callUploadSingleFile = (file: any, folderName: string) => {
             "folder-name": folderName
         }
     });
+}
+
+export const callPayOS = (data: IPayOSPost) => {
+    return axios.post<IBackendRes<IPayOS>>("api/v1/pay-os/create", data);
 }
 

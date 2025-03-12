@@ -107,6 +107,7 @@ export interface IProducts {
         title: string
     }
     price: number
+    cost: number
     discountPercentage: number
     images: string[]
     thumbnail: string
@@ -120,7 +121,7 @@ export interface IProducts {
         numberOf: number
     }
     slug: string
-    sales: number
+    sold: number
     ram?: string
     chip?: string
     ssd?: string
@@ -202,6 +203,7 @@ export interface IOrder {
         color: string
         thumbnail: string
         price: number
+        cost: number
     }[];
     shippingAddress: {
         receiver: string
@@ -215,3 +217,29 @@ export interface IOrder {
     createdAt?: string
     updatedAt?: string
 }
+
+export interface IPayOS {
+    bin: string;
+    checkoutUrl: string;
+    accountNumber: string;
+    accountName: string;
+    amount: number;
+    description: string;
+    orderCode: number;
+    qrCode: string;
+}
+
+export interface IPayOSPost {
+    amount: number;
+    description: string;
+    returnUrl: string;
+    cancelUrl: string;
+    items: {
+        name: string;
+        quantity: number;
+        price: number;
+    }[];
+}
+
+
+

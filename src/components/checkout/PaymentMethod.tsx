@@ -1,8 +1,8 @@
 import { Button, List, Modal, Radio, Typography } from "antd";
 import { useState } from "react";
-import CreditCardPayment from "./CreditCardPayment";
 import { TbArrowRight } from "react-icons/tb";
 import Section from "../home/Section";
+import { useAppSelector } from "@/redux/hook";
 
 interface IProps {
     onSelectPaymentMethod: (value: any) => void
@@ -14,16 +14,8 @@ export const methods = [
         title: "Thanh toán khi nhận hàng"
     },
     {
-        key: "debit",
-        title: "Thẻ tín dụng/Ghi lợ"
-    },
-    {
-        key: "google",
-        title: "Google pay"
-    },
-    {
-        key: "paypal",
-        title: "Paypal"
+        key: "tt",
+        title: "Thanh toán bằng thẻ nội địa"
     },
 ]
 
@@ -31,29 +23,16 @@ const { Title } = Typography
 const PaymentMethod = (props: IProps) => {
     const { onSelectPaymentMethod } = props;
     const [methodSelected, setMethodSelected] = useState("cod");
-    const [isVisibleModelPayment, setIsVisibleModelPayment] = useState(false);
-
+    const isAuthentication = useAppSelector(state => state.auth.isAuthenticated);
     const renderPaymentDetail = () => {
         switch (methodSelected) {
             case "cod":
                 return "Phí thu hộ: ₫0 VNĐ. Ưu đãi về phí vận chuyển (nếu có) áp dụng cả với phí thu hộ.";
-            case "debit":
-                return <CreditCardPayment />;
-            default:
-                return "Đang cập nhập ....";
+            case "tt":
+                return "Thanh toán chuyển khoản bằng thẻ ngân hàng nội địa.";
         }
     }
 
-    const handlePayment = () => {
-        if (methodSelected == "cod") {
-            onSelectPaymentMethod(methodSelected)
-            return;
-        }
-        // thực hiện thanh toán
-        setIsVisibleModelPayment(true);
-        // gọi hàm onSelectPaymentMethod
-
-    }
     return (
         <>
             <Section>
@@ -65,7 +44,7 @@ const PaymentMethod = (props: IProps) => {
                             <List.Item.Meta
                                 title={
                                     <Radio
-                                        disabled={item.key !== 'cod'}
+                                        disabled={(item.key != "cod" && (item.key == "tt" && !isAuthentication))}
                                         onChange={() => setMethodSelected(item.key)}
                                         checked={item.key === methodSelected}
                                     >
@@ -82,20 +61,13 @@ const PaymentMethod = (props: IProps) => {
                 <Button
                     className="mt-3"
                     type="primary"
-                    onClick={handlePayment}
+                    onClick={() => onSelectPaymentMethod(methodSelected)}
                     icon={<TbArrowRight size={16} />}
                     iconPosition="end"
                 >
                     Tiếp tục
                 </Button>
             </Section>
-            <Modal
-                open={isVisibleModelPayment}
-                onOk={() => setIsVisibleModelPayment(false)}
-                onCancel={() => setIsVisibleModelPayment(false)}
-            >
-                Đang cập nhập....
-            </Modal>
         </>
     )
 }
