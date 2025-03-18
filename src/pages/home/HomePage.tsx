@@ -8,6 +8,7 @@ import { useAppSelector } from "@/redux/hook";
 import { ICategories, IProducts } from "@/types/backend";
 import { Carousel } from "antd";
 import { useEffect, useState } from "react";
+import { TbDeviceLaptop } from "react-icons/tb";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 
@@ -15,11 +16,25 @@ import "slick-carousel/slick/slick.css";
 const HomePage = () => {
   const [slideCategory, setSlideCategory] = useState<ICategories[]>([]);
   const [bestSellers, setBestSellers] = useState<IProducts[]>([]);
+  const [macBookAriCategory, setMacBookAriCategory] = useState<IProducts[]>([]);
+  const [products, setProducts] = useState<{
+    bestSellers: IProducts[];
+    macBookAri: IProducts[];
+    macBookPro: IProducts[];
+    iMacAndMacDesktop: IProducts[];
+    tool: IProducts[];
+  }>({
+    bestSellers: [],
+    macBookAri: [],
+    macBookPro: [],
+    iMacAndMacDesktop: [],
+    tool: [],
+  });
 
   const categories = useAppSelector(state => state.generalSettings.categories);
 
   useEffect(() => {
-    getBestSeller()
+    getProducts()
   }, []);
 
   useEffect(() => {
@@ -29,16 +44,27 @@ const HomePage = () => {
     }
   }, [categories])
 
-  const getBestSeller = async () => {
+  const getProducts = async () => {
     try {
-      const res = await callGetProducts("sort=-sold&pageSize=4");
+      const res = await callGetProducts("sort=-createdAt");
       if (res.data) {
-        setBestSellers(res.data.result);
+        const products = res.data.result;
+        const data = {
+          bestSellers: products.sort((a, b) => b.sold - a.sold).slice(0, 4),
+          macBookAri: products.filter(item => /MacBook Air/i.test(item.categoryId.title)).slice(0, 4),
+          macBookPro: products.filter(item => /MacBook Pro/i.test(item.categoryId.title)).slice(0, 4),
+          iMacAndMacDesktop: products.filter(item =>
+            ([/imac/i, /mac mini/i, /mac tudio/i, /mac pro/i].some(regex => regex.test(item.categoryId.title))))
+            .slice(0, 4),
+          tool: products.filter(item => /phu kien/i.test(item.categoryId.title)).slice(0, 4),
+        }
+        setProducts(data)
       }
     } catch (error) {
       console.log(error)
     }
   }
+  console.log(products)
 
   return (
     <>
@@ -83,13 +109,67 @@ const HomePage = () => {
         </Section>
         <Section>
           <Tabbar
-            title="Our BestSeller"
+            title="BestSellers"
+            align="center"
             level={2}
           />
           <div className="row justify-content-center">
-            {bestSellers.map(item => <ProductItem key={item._id} item={item} />)}
+            {products.bestSellers.map(item => <ProductItem key={item._id} item={item} />)}
           </div>
         </Section>
+        {products.macBookAri.length > 0 &&
+          <Section>
+            <Tabbar
+              title="MacBook Ari"
+              level={2}
+              icon={<TbDeviceLaptop size={40} />}
+              align="center"
+            />
+            <div className="row justify-content-center">
+              {products.macBookAri.map(item => <ProductItem key={item._id} item={item} />)}
+            </div>
+          </Section>
+        }
+        {products.macBookPro.length > 0 &&
+          <Section>
+            <Tabbar
+              title="MacBook Pro"
+              level={2}
+              icon={<TbDeviceLaptop size={40} />}
+              align="center"
+            />
+            <div className="row justify-content-center">
+              {products.macBookPro.map(item => <ProductItem key={item._id} item={item} />)}
+            </div>
+          </Section>
+        }
+        {products.iMacAndMacDesktop.length > 0 &&
+          <Section>
+            <Tabbar
+              title="iMac & Mac Desktop"
+              level={2}
+              icon={<TbDeviceLaptop size={40} />}
+              align="center"
+            />
+            <div className="row justify-content-center">
+              {products.iMacAndMacDesktop.map(item => <ProductItem key={item._id} item={item} />)}
+            </div>
+          </Section>
+        }
+        {
+          products.tool.length > 0 &&
+          <Section>
+            <Tabbar
+              title="Phụ kiện"
+              level={2}
+              icon={<TbDeviceLaptop size={40} />}
+              align="center"
+            />
+            <div className="row justify-content-center">
+              {products.tool.map(item => <ProductItem key={item._id} item={item} />)}
+            </div>
+          </Section>
+        }
       </div>
     </>
   )
