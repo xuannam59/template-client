@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IDiscuss, IForgotPassword, IGetAccount, IPayOS, IPayOSPost, IProducts, IReview, IUserAddress } from "@/types/backend";
+import { IAccount, IBackendRes, IBackendResWithPagination, ICart, ICategories, IDiscountCode, IDiscuss, IForgotPassword, IGetAccount, IOrder, IPayOS, IPayOSPost, IProducts, IReview, IUserAddress } from "@/types/backend";
 import axios from "./axios.customize";
 
 export const callLogin = (email: string, password: string) => {
@@ -105,8 +105,17 @@ export const callCreateOrder = (data: unknown) => {
     return axios.post<IBackendRes<{ _id: string }>>(`api/v1/orders`, data);
 }
 
+export const callGetOrder = (current: number, pageSize: number, userId: string, status: number) => {
+    const query = `current=${current}&pageSize=${pageSize}&userId=${userId}&status=${status}&sort=-createdAt`;
+    return axios.get<IBackendResWithPagination<IOrder>>(`api/v1/orders?${query}`);
+}
+
 export const callUpdateOrder = (_id: string, orderId: string) => {
     return axios.patch<IBackendRes<string>>(`api/v1/orders/update/${_id}`, { orderId });
+}
+
+export const callCreateReview = (orderId: string, data: any) => {
+    return axios.post<IBackendRes<string>>(`api/v1/orders/review/${orderId}`, data);
 }
 
 export const callUploadSingleFile = (file: any, folderName: string) => {

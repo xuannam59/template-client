@@ -198,12 +198,14 @@ export interface IOrder {
     userId: string;
     totalAmount: number;
     products: {
-        title: string
-        quantity: number
-        color: string
-        thumbnail: string
-        price: number
-        cost: number
+        _id: string;
+        title: string;
+        quantity: number;
+        color: string;
+        thumbnail: string;
+        price: number;
+        cost: number;
+        review: boolean;
     }[];
     shippingAddress: {
         receiver: string

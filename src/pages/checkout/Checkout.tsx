@@ -134,7 +134,8 @@ const Checkout = () => {
                 color: item.color,
                 thumbnail: item.productId.thumbnail,
                 price: item.productId.price * (1 - item.productId.discountPercentage / 100),
-                cost: item.productId.cost
+                cost: item.productId.cost,
+                review: false
             }));
 
             const data = {

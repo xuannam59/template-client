@@ -15,8 +15,6 @@ import "slick-carousel/slick/slick.css";
 
 const HomePage = () => {
   const [slideCategory, setSlideCategory] = useState<ICategories[]>([]);
-  const [bestSellers, setBestSellers] = useState<IProducts[]>([]);
-  const [macBookAriCategory, setMacBookAriCategory] = useState<IProducts[]>([]);
   const [products, setProducts] = useState<{
     bestSellers: IProducts[];
     macBookAri: IProducts[];
@@ -64,7 +62,6 @@ const HomePage = () => {
       console.log(error)
     }
   }
-  console.log(products)
 
   return (
     <>

@@ -1,8 +1,10 @@
-import PersonalInformation from "@/components/user/PersonalInformation";
+import PersonalInformation from "@/components/profile/PersonalInformation";
 import { Tabs, TabsProps, Typography } from "antd";
 import { TabsPosition } from "antd/es/tabs";
 import { useEffect, useState } from "react";
-import { TbUserFilled } from "react-icons/tb";
+import { TbLock, TbPackage, TbUser } from "react-icons/tb";
+import InfoOrder from "./InfoOrder";
+import ResetPassword from "./ResetPassword";
 
 const { Title } = Typography
 const ProfilePage = () => {
@@ -19,13 +21,25 @@ const ProfilePage = () => {
         {
             key: 'edit',
             label: 'Thông tin người dùng',
-            icon: <TbUserFilled size={20} />,
+            icon: <TbUser size={20} />,
             children: <PersonalInformation />,
+        },
+        {
+            key: 'order',
+            label: 'Thông tin đơn hàng',
+            icon: <TbPackage size={20} />,
+            children: <InfoOrder />,
+        },
+        {
+            key: 'restPassword',
+            label: 'Đổi mật khẩu',
+            icon: <TbLock size={20} />,
+            children: <ResetPassword />,
         }
     ]
     return (
-        <div className="container bg-white mt-4 mb-4 p-3">
-            <Title level={2} type="secondary">Thông tin</Title>
+        <div className="container bg-white mt-4 mb-4 p-3 rounded">
+            <Title level={2} type="secondary">Tài khoản</Title>
             <div className="mt-4">
                 <Tabs
                     tabPosition={tabPosition}
