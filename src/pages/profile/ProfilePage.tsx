@@ -1,10 +1,11 @@
-import PersonalInformation from "@/components/profile/PersonalInformation";
+
 import { Tabs, TabsProps, Typography } from "antd";
 import { TabsPosition } from "antd/es/tabs";
 import { useEffect, useState } from "react";
 import { TbLock, TbPackage, TbUser } from "react-icons/tb";
 import InfoOrder from "./InfoOrder";
 import ResetPassword from "./ResetPassword";
+import PersonalInformation from "./PersonalInformation";
 
 const { Title } = Typography
 const ProfilePage = () => {

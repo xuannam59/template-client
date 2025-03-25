@@ -115,8 +115,15 @@ export const callUpdateOrder = (_id: string, orderId: string) => {
 }
 
 export const callCreateReview = (orderId: string, data: any) => {
-    return axios.post<IBackendRes<string>>(`api/v1/orders/review/${orderId}`, data);
+    return axios.post<IBackendRes<string>>(`api/v1/reviews/${orderId}`, data);
 }
+
+export const callChangePassword = (oldPassword: string, newPassword: string, confirmPassword: string) => {
+    return axios.patch<IBackendRes<string>>(`api/v1/auth/change-password`, {
+        oldPassword, newPassword, confirmPassword
+    });
+}
+
 
 export const callUploadSingleFile = (file: any, folderName: string) => {
     const bodyFormData = new FormData();
